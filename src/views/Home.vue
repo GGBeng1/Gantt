@@ -110,9 +110,6 @@
             <!-- <span class="dateNum todayDateNum" v-if="j.today">
               {{ j.date }}
             </span> -->
-            <!-- isHover:
-                  j.width >= currentLineDay.start &&
-                  j.width <= currentLineDay.end -->
             <span
               class="dateNum"
               :class="{
@@ -263,6 +260,7 @@ export default {
   },
   data() {
     return {
+      //定时器
       timer: null,
       //leftMenu的右侧伸缩线
       rightLineX: 600,
@@ -272,6 +270,7 @@ export default {
       //所有的天数
       days: [],
       monthArr: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      //项目数据
       list: [],
       //当前hover的项目起止时间
       currentLineDay: {
@@ -331,6 +330,7 @@ export default {
     }
   },
   methods: {
+    //里程碑去掉mouseenter显示
     stoneLineMouseenter() {
       this.isShowMsg = false;
       this.currentLineDay = {
@@ -366,6 +366,7 @@ export default {
       // let endTime = this.computedWithTime(endTimeWidth);
       // console.log(endTime);
     },
+    //leftMenu宽度设置
     rightLineMousedown(e) {
       let cx = e.clientX;
       let result;
@@ -383,6 +384,7 @@ export default {
         this.rightLineX = cx + result;
       };
     },
+    //rowClick事件
     handlerRowClick(row) {
       console.log(row);
       window.scrollTo(row.left - 100, 0);
@@ -397,12 +399,15 @@ export default {
       });
       // console.log(this.days);
     },
+    //滑动进度条事件
     thunkMousemove(e, index) {
       this.isShowMsg = false;
     },
+    //滑动进度条事件
     thunkMousedown() {
       this.isShowMsg = false;
     },
+    //滑动进度条事件
     thunkMouseup(per, e, index) {
       this.list[index].per = per;
       // console.log(per, e, index);
@@ -458,11 +463,26 @@ export default {
      */
     leftCurDragMounsedown(dom, index, e) {
       let line = this.$refs[dom][0];
-      let cx = e.clientX;
+      let cx = e.pageX;
       let result;
       let result1;
+      let timer;
+      let z = 0;
+      let addwidth;
       document.onmousemove = event => {
-        let addwidth = -(event.clientX - cx);
+        // if (event.clientX <= this.rightLineX + 80) {
+        //   if (!timer) {
+        //     this.timer = window.setInterval(() => {
+        //       z = window.scrollX - this.currentDaySize.value;
+        //       window.scrollTo(z, 0);
+        //       addwidth = cx - event.pageX + z;
+        //     }, 50);
+        //   }
+        // } else {
+        //   window.clearInterval(timer);
+        //   this.timer = null;
+        addwidth = -(event.pageX - cx);
+        // }
         result = this.list[index].widthMe + addwidth;
         result1 = this.list[index].left - addwidth;
         if (result <= this.currentDaySize.value) {
@@ -693,13 +713,15 @@ export default {
       let result;
       let z = 0;
       let left;
+      // console.log(cp);
       document.onmousemove = event => {
         if (event.clientX >= window.innerWidth - 40) {
-          z = z + this.currentDaySize.value;
+          z = window.scrollX + this.currentDaySize.value;
           window.scrollTo(z, 0);
           let newWith = event.pageX - cp;
           // console.log(event.pageX, cp, 1);
           result = this.list[index].left + newWith;
+          // console.log(this.list[index].left, newWith);
           line.style.left = result + "px";
           if (result <= 0) result = 0;
         } else if (event.clientX <= 40 + this.rightLineX) {
@@ -741,7 +763,7 @@ export default {
     },
     //判断是否为闰年
     /**
-     * @param  {String} year 传入年份
+     * @param  {Number} year 传入年份
      */
     isLeapYear(year) {
       if (year % 4 > 0) {
@@ -855,9 +877,6 @@ export default {
           break;
       }
     },
-    getWeek() {},
-    getMonth() {},
-    getYear() {},
     //加入鼠标滚轮事件
     addMousewheel() {
       let z = 0;
@@ -937,6 +956,7 @@ export default {
         }
       ];
     },
+    //设置里程碑线的高度
     setStoneLine() {
       this.$nextTick(() => {
         let arr = Array.from(document.getElementsByClassName("stoneLine"));
@@ -962,7 +982,6 @@ export default {
   mounted() {
     document.addEventListener("scroll", () => {
       let w = window.scrollX;
-      // console.log(w);
       if (w <= 62) {
         this.showFixdTopMonth = false;
       } else {
