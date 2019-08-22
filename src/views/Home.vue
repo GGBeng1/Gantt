@@ -42,9 +42,6 @@
             >
               今天
             </span>
-            <!-- isHover:
-                  j.width >= currentLineDay.start &&
-                  j.width <= currentLineDay.end -->
             <span
               v-else
               class="dateNum"
