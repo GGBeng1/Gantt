@@ -993,6 +993,16 @@ export default {
           e.style.height = height + "px";
         });
       });
+    },
+    handleScroll() {
+      let w = window.scrollX;
+      if (w <= 62) {
+        this.showFixdTopMonth = false;
+      } else {
+        this.showFixdTopMonth = true;
+      }
+      let time = this.computedWithTime(w, "YD");
+      this.fixdTopMonth = time;
     }
   },
   watch: {
@@ -1005,20 +1015,14 @@ export default {
     }
   },
   mounted() {
-    document.addEventListener("scroll", () => {
-      let w = window.scrollX;
-      if (w <= 62) {
-        this.showFixdTopMonth = false;
-      } else {
-        this.showFixdTopMonth = true;
-      }
-      let time = this.computedWithTime(w, "YD");
-      this.fixdTopMonth = time;
-    });
+    document.addEventListener("scroll", this.handleScroll);
     // this.setStoneLine();
     this.getDay();
     // this.addMousewheel();
     this.setList();
+  },
+  beforeDestroy() {
+    window.removeEventListener("scroll", this.handleScroll);
   }
 };
 </script>
