@@ -269,6 +269,7 @@ export default {
       allDays: [],
       //所有的天数
       days: [],
+      //月数
       monthArr: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
       //项目数据
       list: [],
@@ -363,8 +364,6 @@ export default {
       this.list[index].widthMe = this.currentDaySize.value;
       this.list[index].widthChild = this.currentDaySize.value;
       this.setStoneLine();
-      // let endTime = this.computedWithTime(endTimeWidth);
-      // console.log(endTime);
     },
     //leftMenu宽度设置
     rightLineMousedown(e) {
@@ -389,15 +388,13 @@ export default {
       console.log(row);
       window.scrollTo(row.left - 100, 0);
     },
+    //更改daySize
     handleSetDaySize(item) {
-      console.log(item);
+      // console.log(item);
       this.currentDaySize = item;
-      // this.setList();
-      // this.checkList();
       this.days.forEach((item, index) => {
         item.width = (index + 1) * this.currentDaySize.value;
       });
-      // console.log(this.days);
     },
     //滑动进度条事件
     thunkMousemove(e, index) {
@@ -410,14 +407,11 @@ export default {
     //滑动进度条事件
     thunkMouseup(per, e, index) {
       this.list[index].per = per;
-      // console.log(per, e, index);
       this.checkIsin(e, index);
     },
     //根据index值和e判断是否在当前line的范围里，是否展示时间和msg框
     checkIsin(events, index) {
       let line = this.$refs[`line${index}`][0];
-      // console.log(line);
-      // console.log(events);
       let lineTop = parseInt(line.style.top);
       let lineDown = lineTop + 16;
       let lineLeft = parseInt(line.style.left);
@@ -466,23 +460,29 @@ export default {
       let cx = e.pageX;
       let result;
       let result1;
-      let timer;
       let z = 0;
       let addwidth;
       document.onmousemove = event => {
-        // if (event.clientX <= this.rightLineX + 80) {
-        //   if (!timer) {
-        //     this.timer = window.setInterval(() => {
-        //       z = window.scrollX - this.currentDaySize.value;
-        //       window.scrollTo(z, 0);
-        //       addwidth = cx - event.pageX + z;
-        //     }, 50);
-        //   }
-        // } else {
-        //   window.clearInterval(timer);
-        //   this.timer = null;
-        addwidth = -(event.pageX - cx);
-        // }
+        if (
+          event.clientX <= this.rightLineX + 80 &&
+          event.pageX >= this.rightLineX + 80
+        ) {
+          if (!this.timer) {
+            this.timer = window.setInterval(() => {
+              z = window.scrollX - this.currentDaySize.value;
+              window.scrollTo(z, 0);
+              addwidth = cx - event.pageX + z;
+            }, 50);
+          }
+        } else {
+          window.clearInterval(this.timer);
+          this.timer = null;
+          if (event.pageX <= this.rightLineX) {
+            addwidth = -(this.rightLineX - 2 - cx);
+          } else {
+            addwidth = -(event.pageX - cx);
+          }
+        }
         result = this.list[index].widthMe + addwidth;
         result1 = this.list[index].left - addwidth;
         if (result <= this.currentDaySize.value) {
@@ -491,6 +491,9 @@ export default {
             this.list[index].left +
             this.list[index].widthMe -
             this.currentDaySize.value;
+        } else if (result1 <= 0) {
+          result1 = 0;
+          // console.log(result1);
         }
         line.style.width = result + "px";
         line.style.left = result1 + "px";
@@ -529,23 +532,45 @@ export default {
       let cx = e.pageX;
       let result;
       let z = 0;
+      let x = 0;
       let wx = window.scrollX;
       let addwidth;
-      // let timer;
+      let timers;
       document.onmousemove = event => {
         if (event.clientX >= window.innerWidth - 80) {
+          // console.log(1);
           if (!this.timer) {
+            // window.clearInterval(this.timer);
+            // this.timer = null;
+            z = 0;
+            wx = window.scrollX;
             this.timer = window.setInterval(() => {
               z = z + this.currentDaySize.value;
               window.scrollTo(z + wx, 0);
               addwidth = event.pageX - cx + z;
             }, 50);
           }
+        } else if (event.clientX <= this.rightLineX + 80) {
+          // console.log(2);
+          // window.clearInterval(this.timer);
+          // this.timer = null;
+          if (!timers) {
+            timers = window.setInterval(() => {
+              // z = z + this.currentDaySize.value;
+              // window.scrollTo(z + wx, 0);
+              // addwidth = event.pageX - cx + z;
+              x = window.scrollX - this.currentDaySize.value;
+              window.scrollTo(x, 0);
+              addwidth = event.pageX - cx + x;
+            }, 50);
+          }
         } else {
-          // console.log(123123);
+          // console.log(3);
           window.clearInterval(this.timer);
+          window.clearInterval(timers);
           // timer = null;
           this.timer = null;
+          timers = null;
           // console.log(z);
           // z = 0;
           addwidth = event.pageX - cx;
