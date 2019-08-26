@@ -461,7 +461,10 @@ export default {
       let result;
       let result1;
       let z = 0;
+      let x = 0;
       let addwidth;
+      let timers;
+      let wx = window.scrollX;
       document.onmousemove = event => {
         if (
           event.clientX <= this.rightLineX + 80 &&
@@ -471,12 +474,22 @@ export default {
             this.timer = window.setInterval(() => {
               z = window.scrollX - this.currentDaySize.value;
               window.scrollTo(z, 0);
-              addwidth = cx - event.pageX + z;
+              addwidth = cx - event.pageX;
+            }, 50);
+          }
+        } else if (event.clientX >= window.innerWidth - 80) {
+          if (!timers) {
+            timers = window.setInterval(() => {
+              x = window.scrollX + this.currentDaySize.value;
+              window.scrollTo(x, 0);
+              addwidth = -(event.pageX - cx);
             }, 50);
           }
         } else {
           window.clearInterval(this.timer);
+          window.clearInterval(timers);
           this.timer = null;
+          timers = null;
           if (event.pageX <= this.rightLineX) {
             addwidth = -(this.rightLineX - 2 - cx);
           } else {
@@ -551,17 +564,11 @@ export default {
             }, 50);
           }
         } else if (event.clientX <= this.rightLineX + 80) {
-          // console.log(2);
-          // window.clearInterval(this.timer);
-          // this.timer = null;
           if (!timers) {
             timers = window.setInterval(() => {
-              // z = z + this.currentDaySize.value;
-              // window.scrollTo(z + wx, 0);
-              // addwidth = event.pageX - cx + z;
               x = window.scrollX - this.currentDaySize.value;
               window.scrollTo(x, 0);
-              addwidth = event.pageX - cx + x;
+              addwidth = event.pageX - cx;
             }, 50);
           }
         } else {
