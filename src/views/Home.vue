@@ -6,6 +6,7 @@
         @handlerRowClick="handlerRowClick"
         @milestone="handlerMilestone"
         @planProject="handlerPlanProject"
+        @handlerGroup="handlerGroup"
       ></leftMenu>
       <div class="rightLine" :style="{ left: rightLineX + 'px' }"></div>
       <div
@@ -331,6 +332,13 @@ export default {
     }
   },
   methods: {
+    // 转为分组
+    handlerGroup(row) {
+      let index = this.list.findIndex(item => {
+        return item.name == row.name;
+      });
+      this.list[index].type = "3";
+    },
     //里程碑去掉mouseenter显示
     stoneLineMouseenter() {
       this.isShowMsg = false;
@@ -519,6 +527,10 @@ export default {
           document.onmousemove = document.onmouseup = null;
           return;
         }
+        window.clearInterval(this.timer);
+        window.clearInterval(timers);
+        this.timer = null;
+        timers = null;
         result =
           Math.round(result / this.currentDaySize.value) *
           this.currentDaySize.value;
@@ -610,6 +622,10 @@ export default {
           document.onmousemove = document.onmouseup = null;
           return;
         }
+        window.clearInterval(this.timer);
+        window.clearInterval(timers);
+        this.timer = null;
+        timers = null;
         result =
           Math.round(result / this.currentDaySize.value) *
           this.currentDaySize.value;
@@ -1030,6 +1046,7 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener("scroll", this.handleScroll);
+    document.onmousemove = document.onmouseup = null;
   }
 };
 </script>
