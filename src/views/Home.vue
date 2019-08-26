@@ -577,10 +577,7 @@ export default {
       let timers;
       document.onmousemove = event => {
         if (event.clientX >= window.innerWidth - 80) {
-          // console.log(1);
           if (!this.timer) {
-            // window.clearInterval(this.timer);
-            // this.timer = null;
             z = 0;
             wx = window.scrollX;
             this.timer = window.setInterval(() => {
@@ -598,18 +595,12 @@ export default {
             }, 50);
           }
         } else {
-          // console.log(3);
           window.clearInterval(this.timer);
           window.clearInterval(timers);
-          // timer = null;
           this.timer = null;
           timers = null;
-          // console.log(z);
-          // z = 0;
           addwidth = event.pageX - cx;
-          // console.log(event.pageX);
         }
-        // window.clearInterval(timer);
         result = this.list[index].widthMe + addwidth;
         if (
           result + parseInt(line.style.left) >=
@@ -675,7 +666,6 @@ export default {
      */
     //鼠标悬停展示上部日期
     lineMouseover(dom, e, index, ismove) {
-      // console.log(this.$refs[dom]);
       let start =
         Math.round(
           parseInt(this.$refs[dom][0].style.left) / this.currentDaySize.value
@@ -692,7 +682,6 @@ export default {
         end
       };
       this.isHover = true;
-      // console.log(start, end);
     },
     /**
      * @param  {String} dom ref
@@ -725,7 +714,6 @@ export default {
         top: e.y + 20
       };
       this.isShowMsg = true;
-      // console.log(e.pageX + 220 - window.scrollX >= window.innerWidth, e.pageX);
     },
     //鼠标离开信息消失，时间显示消失
     /**
@@ -781,22 +769,18 @@ export default {
           z = window.scrollX + this.currentDaySize.value;
           window.scrollTo(z, 0);
           let newWith = event.pageX - cp;
-          // console.log(event.pageX, cp, 1);
           result = this.list[index].left + newWith;
-          // console.log(this.list[index].left, newWith);
           line.style.left = result + "px";
           if (result <= 0) result = 0;
         } else if (event.clientX <= 40 + this.rightLineX) {
           z = window.scrollX - this.currentDaySize.value;
           window.scrollTo(z, 0);
           let newWith = event.pageX - cp;
-          // console.log(event.pageX, cp, 2);
           result = this.list[index].left + newWith;
           if (result <= 0) result = 0;
           line.style.left = result + "px";
         } else {
           let newWith = event.pageX - cp;
-          // console.log(event.pageX, cp, 3);
           result = this.list[index].left + newWith;
           if (result <= 0) result = 0;
           line.style.left = result + "px";
@@ -821,7 +805,6 @@ export default {
     //获取近三年的所有天数
     getDay() {
       this.getAllDate();
-      // console.log(this.allDays);
     },
     //判断是否为闰年
     /**
@@ -862,7 +845,6 @@ export default {
       let arr = [];
       this.allDays.forEach(item => {
         arr = arr.concat(item.month);
-        // console.log(item.month);
       });
       arr.forEach(item => {
         for (var j in item) {
@@ -872,7 +854,6 @@ export default {
       this.days.forEach((item, index) => {
         item.width = (index + 1) * this.currentDaySize.value;
       });
-      // console.log(this.days);
     },
     /**
      * @param  {Number} days
@@ -887,7 +868,6 @@ export default {
       arr.push(obj);
       let s = arr[0];
       for (let item in s) {
-        // console.log(item, s[item]);
         s[item] = this.addNum(s[item], item, year);
       }
       // console.log(arr);
@@ -899,7 +879,6 @@ export default {
      * @param  {number} year 年份
      */
     addNum(num, month, year) {
-      // console.log(num, month, year);
       let arr = [];
       let obj = {};
       for (let i = 1; i <= num; i++) {
@@ -1053,9 +1032,7 @@ export default {
   },
   mounted() {
     document.addEventListener("scroll", this.handleScroll);
-    // this.setStoneLine();
     this.getDay();
-    // this.addMousewheel();
     this.setList();
   },
   beforeDestroy() {
