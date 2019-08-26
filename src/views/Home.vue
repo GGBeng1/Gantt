@@ -168,54 +168,68 @@
           </el-dropdown-menu>
         </el-dropdown>
       </div>
-      <div
-        class="line"
-        v-for="(item, index) in list"
-        :style="{
-          left: item.left + 'px',
-          width: item.widthMe + 'px',
-          top: index == 0 ? '52px' : index * 40 + 52 + 'px'
-        }"
-        :ref="'line' + index"
-        :key="item.startTime + item.per + index"
-        @mousedown="lineMousedown(`line${index}`, $event, index)"
-        @mouseover="lineMouseover(`line${index}`, $event, index)"
-        @mouseleave="lineMouseleave"
-        @mouseenter="lineMouseenter(`line${index}`, $event, index)"
-      >
-        <slider
-          :min="0"
-          :max="100"
-          v-model="item.per"
-          :index="index"
-          :widths="item.widthChild"
-          @thunkMousedown="thunkMousedown"
-          @thunkMouseup="thunkMouseup"
-          @thunkMousemove="thunkMousemove"
-          v-show="item.type == '1'"
-        ></slider>
+      <template v-for="(item, index) in list">
         <div
-          class="leftCurDrag"
-          v-if="item.type == '1'"
-          @mousedown.stop="leftCurDragMounsedown(`line${index}`, index, $event)"
-        ></div>
-        <div
-          class="rightCurDrag"
-          v-show="item.type == '1'"
-          @mousedown.stop="
-            rightCurDragMounsedown(`line${index}`, index, $event)
-          "
-        ></div>
-        <div
-          class="stoneLine"
-          :style="{ top: -12 - index * 40 + 'px' }"
-          v-show="item.type == '2'"
-          @mouseenter="stoneLineMouseenter"
-        ></div>
-        <div class="milestone" v-show="item.type == '2'">
-          <i class="el-icon-check"></i>
+          class="line"
+          :style="{
+            left: item.left + 'px',
+            width: item.widthMe + 'px',
+            top: index == 0 ? '52px' : index * 40 + 52 + 'px'
+          }"
+          v-show="item.type == '1' || item.type == '2'"
+          :ref="'line' + index"
+          :key="item.startTime + item.per + index"
+          @mousedown="lineMousedown(`line${index}`, $event, index)"
+          @mouseover="lineMouseover(`line${index}`, $event, index)"
+          @mouseleave="lineMouseleave"
+          @mouseenter="lineMouseenter(`line${index}`, $event, index)"
+        >
+          <slider
+            :min="0"
+            :max="100"
+            v-model="item.per"
+            :index="index"
+            :widths="item.widthChild"
+            @thunkMousedown="thunkMousedown"
+            @thunkMouseup="thunkMouseup"
+            @thunkMousemove="thunkMousemove"
+            v-show="item.type == '1'"
+          ></slider>
+          <div
+            class="leftCurDrag"
+            v-show="item.type == '1'"
+            @mousedown.stop="
+              leftCurDragMounsedown(`line${index}`, index, $event)
+            "
+          ></div>
+          <div
+            class="rightCurDrag"
+            v-show="item.type == '1'"
+            @mousedown.stop="
+              rightCurDragMounsedown(`line${index}`, index, $event)
+            "
+          ></div>
+          <div
+            class="stoneLine"
+            :style="{ top: -12 - index * 40 + 'px' }"
+            v-if="item.type == '2'"
+            @mouseenter="stoneLineMouseenter"
+          ></div>
+          <div class="milestone" v-if="item.type == '2'">
+            <i class="el-icon-check"></i>
+          </div>
         </div>
-      </div>
+        <div
+          class="group"
+          :style="{
+            top: index == 0 ? '52px' : index * 40 + 52 + 'px'
+          }"
+          v-if="item.type == '3' && item.children && item.children.length > 0"
+          :key="item.startTime + item.per + index + 'cmz'"
+        >
+          <div class="progress"></div>
+        </div>
+      </template>
       <transition name="el-zoom-in-center">
         <div
           class="projectMsg"
@@ -1209,6 +1223,31 @@ export default {
           color: #fff;
           z-index: 1;
         }
+      }
+    }
+    .group {
+      position: absolute;
+      background-color: #909090 !important;
+      border: none !important;
+      border-radius: 0 !important;
+      height: 14px !important;
+      line-height: 14px !important;
+      // margin-top: 5px;
+      clip-path: polygon(
+        100% 0,
+        100% 100%,
+        calc(100% - 8px) 60%,
+        8px 60%,
+        0 100%,
+        0 0
+      );
+      > div {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      }
+      .progress {
+        width: 50px;
+        background-color: #606060 !important;
+        height: 100%;
       }
     }
   }
