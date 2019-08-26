@@ -104,9 +104,10 @@ export default {
       },
       projectType: {
         1: "计划项目",
-        2: "里程碑"
+        2: "里程碑",
+        3: "分组"
       },
-      menuLists: ["编辑", "里程碑", "删除"],
+      menuLists: ["编辑", "里程碑", "分组", "删除"],
       columns: [
         {
           prop: "name",
@@ -185,10 +186,13 @@ export default {
     handleRowMore(row, e) {
       // console.log(row, e);
       // this.menuLists[1] = this.projectType[row.type];
+      this.menuLists = ["编辑", "里程碑", "分组", "删除"];
       if (row.type == "1") {
         this.menuLists[1] = "里程碑";
       } else if (row.type == "2") {
         this.menuLists[1] = "计划项目";
+      } else if (row.type == "3") {
+        this.menuLists = ["删除分组"];
       }
       this.menuOpen = true;
       this.currentRow = row;
@@ -201,7 +205,7 @@ export default {
     },
     handleMenuClick(index) {
       this.menuOpen = false;
-      if (index == 2) {
+      if (index == 3) {
         this.$confirm("此操作将永久删除该项目, 是否继续?", "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
@@ -226,6 +230,21 @@ export default {
           })
           .catch(() => {});
       } else if (index == 0) {
+        if (this.currentRow.type == 3) {
+          console.log(111111);
+          return;
+        }
+      } else if (index == 2) {
+        this.$confirm(`确定转为分组？`, "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "info",
+          center: true
+        })
+          .then(() => {
+            this.$emit("handlerGroup", this.currentRow);
+          })
+          .catch(() => {});
       }
       // this.currentRow = {};
     }
