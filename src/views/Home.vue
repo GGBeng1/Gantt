@@ -1,5 +1,12 @@
 <template>
   <div class="chart" ref="chart">
+    <div class="header">
+      <div class="header-left">
+        <el-button type="primary" size="mini" @click="handlerAddGantt"
+          >新建</el-button
+        >
+      </div>
+    </div>
     <div class="left" :style="{ width: rightLineX + 'px' }">
       <leftMenu
         :list="list"
@@ -262,19 +269,36 @@
         </div>
       </transition>
     </div>
+    <el-dialog
+      :title="title"
+      :visible.sync="dialogVal"
+      width="500px"
+      :before-close="hanleClose"
+    >
+      <dialogAdd
+        :dialogVal.sync="dialogVal"
+        @submit="handleSave"
+        ref="dialogAdd"
+      ></dialogAdd>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import dialogAdd from "./components/dialogAdd";
 import slider from "./components/slider";
 import leftMenu from "./components/leftMenu";
 export default {
   components: {
     slider,
-    leftMenu
+    leftMenu,
+    dialogAdd
   },
   data() {
     return {
+      dialogVal: false,
+      //title
+      title: "新建",
       //定时器
       timer: null,
       //leftMenu的右侧伸缩线
@@ -346,6 +370,40 @@ export default {
     }
   },
   methods: {
+    //beforClose
+    hanleClose(done) {
+      this.$refs.dialogAdd.resetFields();
+      done();
+    },
+    //新建保存
+    handleSave(val) {
+      let obj = Object.assign({}, val);
+      console.log(obj);
+      obj.per = 0;
+      obj.startTime = obj.planTime.length > 0 ? obj.planTime[0] : obj.stoneTime;
+      obj.endTime = obj.planTime.length > 0 ? obj.planTime[1] : obj.stoneTime;
+
+      if (obj.type != 3) {
+        obj.left =
+          (Math.floor(
+            obj.startTime - new Date(`${this.currentYear - 1}/01/01`).getTime()
+          ) /
+            (1000 * 60 * 60 * 24)) *
+          this.currentDaySize.value;
+        obj.widthMe = obj.widthChild =
+          (Math.floor(obj.endTime - obj.startTime) / (1000 * 60 * 60 * 24)) *
+            this.currentDaySize.value +
+          this.currentDaySize.value;
+      }
+      this.list.push(obj);
+      if (obj.type == 2) {
+        this.setStoneLine();
+      }
+    },
+    //新建项目
+    handlerAddGantt() {
+      this.dialogVal = true;
+    },
     // 转为分组
     handlerGroup(row) {
       let index = this.list.findIndex(item => {
@@ -428,7 +486,9 @@ export default {
     },
     //滑动进度条事件
     thunkMouseup(per, e, index) {
+      console.log(per, index);
       this.list[index].per = per;
+      this.$set(this.list, index, this.list[index]);
       this.checkIsin(e, index);
     },
     //根据index值和e判断是否在当前line的范围里，是否展示时间和msg框
@@ -1046,11 +1106,26 @@ export default {
 .chart {
   height: 100%;
   user-select: none;
+  position: relative;
+  .header {
+    height: 40px;
+    position: relative;
+    .header-left {
+      margin-left: 10px;
+      box-sizing: border-box;
+      padding-top: 5px;
+      height: 40px;
+      position: fixed;
+      top: 0px;
+      left: 0px;
+      background-color: #fff;
+    }
+  }
   .left {
     position: fixed;
-    top: 0;
+    top: 40px;
     left: 0px;
-    height: 100%;
+    height: calc(100% - 40px);
     background-color: #fff;
     z-index: 999;
     // border-right: 1px solid #d7d7d7;
@@ -1106,13 +1181,13 @@ export default {
   }
   .date {
     display: flex;
-    height: 100%;
+    height: calc(100% - 40px);
     position: relative;
     .topMonth {
       // width: 100px;
       background-color: #fff;
       position: fixed;
-      top: 0px;
+      top: 40px;
       height: 21px;
       line-height: 21px;
       font-size: 12px !important;
@@ -1122,7 +1197,7 @@ export default {
     .toolTip {
       position: fixed;
       right: 0px;
-      top: 50px;
+      top: 90px;
       z-index: 999;
 
       .base {
