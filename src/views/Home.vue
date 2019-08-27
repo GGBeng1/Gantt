@@ -14,6 +14,9 @@
         @milestone="handlerMilestone"
         @planProject="handlerPlanProject"
         @handlerGroup="handlerGroup"
+        @handlerEdit="handlerEdit"
+        @handleGroupAdd="handleGroupAdd"
+        @handlerExpand="handlerExpand"
       ></leftMenu>
       <div class="rightLine" :style="{ left: rightLineX + 'px' }"></div>
       <div
@@ -235,6 +238,57 @@
           :key="item.startTime + item.per + index + 'cmz'"
         >
           <div class="progress"></div>
+          <!-- <div
+          class="line"
+          v-for='(k,kindex) in item.children'
+          :key='k.id'
+          :style="{
+            left: k.left + 'px',
+            width: k.widthMe + 'px',
+            top: kindex == 0 ? item.top + 40 : index * 40 + 52 + 'px'
+          }"
+          v-show="k.type == '1' || k.type == '2'"
+          :ref="'line' + id"
+          @mousedown="lineMousedown(`line${id}`, $event, item.id,k.id)"
+          @mouseover="lineMouseover(`line${id}`, $event, item.id,k.id)"
+          @mouseleave="lineMouseleave"
+          @mouseenter="lineMouseenter(`line${id}`, $event, item.id,k.id)"
+        >
+          <slider
+            :min="0"
+            :max="100"
+            v-model="item.per"
+            :index="index"
+            :widths="item.widthChild"
+            @thunkMousedown="thunkMousedown"
+            @thunkMouseup="thunkMouseup"
+            @thunkMousemove="thunkMousemove"
+            v-show="item.type == '1'"
+          ></slider>
+          <div
+            class="leftCurDrag"
+            v-show="item.type == '1'"
+            @mousedown.stop="
+              leftCurDragMounsedown(`line${index}`, index, $event)
+            "
+          ></div>
+          <div
+            class="rightCurDrag"
+            v-show="item.type == '1'"
+            @mousedown.stop="
+              rightCurDragMounsedown(`line${index}`, index, $event)
+            "
+          ></div>
+          <div
+            class="stoneLine"
+            :style="{ top: -12 - index * 40 + 'px' }"
+            v-if="item.type == '2'"
+            @mouseenter="stoneLineMouseenter"
+          ></div>
+          <div class="milestone" v-if="item.type == '2'">
+            <i class="el-icon-check"></i>
+          </div>
+        </div> -->
         </div>
       </template>
       <transition name="el-zoom-in-center">
@@ -274,9 +328,11 @@
       :visible.sync="dialogVal"
       width="500px"
       :before-close="hanleClose"
+      :append-to-body="true"
     >
       <dialogAdd
         :dialogVal.sync="dialogVal"
+        :isChildren="isChildren"
         @submit="handleSave"
         ref="dialogAdd"
       ></dialogAdd>
@@ -296,6 +352,8 @@ export default {
   },
   data() {
     return {
+      //当前项是否是子集
+      isChildren: false,
       dialogVal: false,
       //title
       title: "新建",
@@ -349,7 +407,8 @@ export default {
         top: 0
       },
       isHover: false,
-      showFixdTopMonth: false
+      showFixdTopMonth: false,
+      currentListIndex: ""
     };
   },
   computed: {
@@ -370,15 +429,41 @@ export default {
     }
   },
   methods: {
+    //分组是否展开
+    handlerExpand(row, expand) {
+      this.list.find(item => {
+        return item.id == row.id;
+      }).expand = expand;
+    },
+    //分组添加子集
+    handleGroupAdd(row) {
+      this.$nextTick(() => {
+        this.$refs.dialogAdd.resetFields();
+      });
+      this.currentListIndex = this.list.findIndex(item => {
+        return item.id == row.id;
+      });
+      // console.log(index);
+      this.dialogVal = true;
+      this.isChildren = true;
+      // console.log(this.isChildren);
+      // this.$set(this.isChildren, true);
+    },
+    //编辑
+    handlerEdit(row) {
+      // console.log(row);
+    },
     //beforClose
     hanleClose(done) {
+      this.currentListIndex = "";
+      this.isChildren = false;
       this.$refs.dialogAdd.resetFields();
       done();
     },
     //新建保存
-    handleSave(val) {
+    handleSave(val, isChildren) {
       let obj = Object.assign({}, val);
-      console.log(obj);
+      // console.log(obj);
       obj.per = 0;
       obj.startTime = obj.planTime.length > 0 ? obj.planTime[0] : obj.stoneTime;
       obj.endTime = obj.planTime.length > 0 ? obj.planTime[1] : obj.stoneTime;
@@ -395,14 +480,35 @@ export default {
             this.currentDaySize.value +
           this.currentDaySize.value;
       }
-      this.list.push(obj);
       if (obj.type == 2) {
         this.setStoneLine();
       }
+      if (obj.type == 3) {
+        obj.id = new Date().getTime();
+        obj.expand = true;
+      }
+      if (isChildren && this.currentListIndex) {
+        let s = this.list[parseInt(this.currentListIndex)];
+        s.children = s.children ? s.children : [];
+        obj.id = new Date().getTime();
+        obj.parentId = s.id;
+        s.children.push(obj);
+        // console.log(s);
+        this.$set(this.list, parseInt(this.currentListIndex), s);
+      } else {
+        this.list.push(obj);
+      }
+      this.currentListIndex = "";
+      this.isChildren = false;
+      this.$refs.dialogAdd.resetFields();
     },
     //新建项目
     handlerAddGantt() {
       this.dialogVal = true;
+      this.title = "新建";
+      this.$nextTick(() => {
+        this.$refs.dialogAdd.resetFields();
+      });
     },
     // 转为分组
     handlerGroup(row) {
@@ -410,6 +516,8 @@ export default {
         return item.name == row.name;
       });
       this.list[index].type = "3";
+      this.list[index].per = 0;
+      this.$set(this.list, index, this.list[index]);
     },
     //里程碑去掉mouseenter显示
     stoneLineMouseenter() {
@@ -1054,6 +1162,34 @@ export default {
               (1000 * 60 * 60 * 24)) *
               this.currentDaySize.value +
             this.currentDaySize.value
+        },
+        {
+          children: [
+            {
+              endTime: 1569168000000,
+              id: 1566892053776,
+              left: 24120,
+              name: "zzzzzzz",
+              ower: "",
+              parentId: 1566892046489,
+              per: 0,
+              startTime: 1566835200000,
+              stoneTime: "",
+              type: "1",
+              widthChild: 1120,
+              widthMe: 1120
+            }
+          ],
+          endTime: "",
+          id: 1566892046489,
+          name: "asdasdasd",
+          ower: "",
+          per: 0,
+          planTime: [],
+          startTime: "",
+          stoneTime: "",
+          type: "3",
+          expand: true
         }
       ];
     },
@@ -1297,7 +1433,7 @@ export default {
         -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
       }
       .progress {
-        width: 50px;
+        // width: 50px;
         background-color: #606060 !important;
         height: 100%;
       }

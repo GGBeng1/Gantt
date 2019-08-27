@@ -51,6 +51,7 @@
             :key="item.value"
             :label="item.label"
             :value="item.value"
+            :disabled="item.disabled"
           >
           </el-option>
         </el-select>
@@ -68,7 +69,8 @@
 export default {
   props: {
     dialogVal: Boolean,
-    owerOptions: Array
+    owerOptions: Array,
+    isChildren: Boolean
   },
   data() {
     return {
@@ -90,7 +92,8 @@ export default {
         },
         {
           label: "分组",
-          value: "3"
+          value: "3",
+          disabled: false
         }
       ],
       rules: {
@@ -142,28 +145,48 @@ export default {
           ],
           ower: [{ message: "请选择负责人", trigger: "blur" }]
         };
+      } else if (val == 3) {
+        this.rules = {
+          name: [
+            { required: true, message: "请输入名称", trigger: "blur" },
+            {
+              min: 1,
+              max: 100,
+              message: "长度在 1 到 100个字符",
+              trigger: "blur"
+            }
+          ],
+          ower: [{ message: "请选择负责人", trigger: "blur" }]
+        };
       }
+    },
+    isChildren: {
+      handler: function(val) {
+        this.$set(this.typeOptions, 2, {
+          label: "分组",
+          value: "3",
+          disabled: val
+        });
+      },
+      immediate: true
     }
   },
   methods: {
     onSubmit() {
       this.$refs.form.validate(valid => {
         if (valid) {
-          this.$emit("submit", this.form);
           this.$emit("update:dialogVal", false);
-          // this.form = {
-          //   name: "",
-          //   ower: "",
-          //   type: "1",
-          //   planTime: [],
-          //   stoneTime: ""
-          // };
+          if (this.isChildren) {
+            this.$emit("submit", this.form, true);
+          } else {
+            this.$emit("submit", this.form);
+          }
         } else {
           return false;
         }
       });
       this.$refs.form.resetFields();
-      this.form.type = "1";
+      // this.form.type = "1";
     },
     onCancle() {
       this.$emit("update:dialogVal", false);
