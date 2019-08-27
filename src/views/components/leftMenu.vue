@@ -10,7 +10,11 @@
       border
       fit
       style="width: 100%"
+      row-key="id"
+      default-expand-all
       @row-click="handlerRowClick"
+      @expand-change="handlerExpand"
+      :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
     >
       <el-table-column
         v-for="col in columns"
@@ -95,12 +99,14 @@ export default {
   //   list: {
   //     handler: function(newValue) {
   //       this.tableData = newValue;
+  //       // this.$set(this, tableData, newValue);
   //     },
   //     deep: true
   //   }
   // },
   data() {
     return {
+      // tableData: [],
       checkList: [],
       isShowHeaderBox: false,
       menuOpen: false,
@@ -173,6 +179,10 @@ export default {
     };
   },
   methods: {
+    handlerExpand(row, expand) {
+      // console.log(row, expanded);
+      this.$emit("handlerExpand", row, expand);
+    },
     handlerSave() {
       this.isShowHeaderBox = false;
       let arr = [];
@@ -200,12 +210,12 @@ export default {
       } else if (row.type == "2") {
         this.menuLists[1] = "计划项目";
       } else if (row.type == "3") {
-        this.menuLists = ["删除分组"];
+        this.menuLists = ["编辑", "添加任务", "删除分组"];
       }
       this.menuOpen = true;
       this.currentRow = row;
       let s = this.$refs.menulist.style;
-      s.top = e.y - 10 + "px";
+      s.top = e.y - 10 - 40 + "px";
       s.left = e.x + 20 + "px";
     },
     handleShowHeaderCheckBox() {
@@ -223,6 +233,11 @@ export default {
           .then(() => {})
           .catch(() => {});
       } else if (index == 1) {
+        if (this.currentRow.type == 3) {
+          console.log("添加任务");
+          this.$emit("handleGroupAdd", this.currentRow);
+          return;
+        }
         this.$confirm(`确定转为${this.menuLists[1]}？`, "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
@@ -238,11 +253,12 @@ export default {
           })
           .catch(() => {});
       } else if (index == 0) {
+        this.$emit("handlerEdit", this.currentRow);
+      } else if (index == 2) {
         if (this.currentRow.type == 3) {
-          console.log(111111);
+          console.log("删除分组");
           return;
         }
-      } else if (index == 2) {
         this.$confirm(`确定转为分组？`, "提示", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
