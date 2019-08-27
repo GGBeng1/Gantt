@@ -91,6 +91,14 @@ export default {
       return this.list;
     }
   },
+  // watch: {
+  //   list: {
+  //     handler: function(newValue) {
+  //       this.tableData = newValue;
+  //     },
+  //     deep: true
+  //   }
+  // },
   data() {
     return {
       checkList: [],
