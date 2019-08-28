@@ -178,27 +178,52 @@
           </el-dropdown-menu>
         </el-dropdown>
       </div>
-      <template v-for="(item, index) in list">
+      <template v-for="(item, index) in computedList">
         <div
           class="line"
           :style="{
             left: item.left + 'px',
             width: item.widthMe + 'px',
-            top: index == 0 ? '52px' : index * 40 + 52 + 'px'
+            top: item.top + 'px'
           }"
-          v-show="item.type == '1' || item.type == '2'"
-          :ref="'line' + index"
-          :key="item.startTime + item.per + index"
-          @mousedown="lineMousedown(`line${index}`, $event, index)"
-          @mouseover="lineMouseover(`line${index}`, $event, index)"
+          v-show="(item.type == '1' || item.type == '2') && item.isShow"
+          :ref="'line' + item.id"
+          :key="item.id + index + 'ccc'"
+          @mousedown="
+            lineMousedown(
+              `line${item.id}`,
+              $event,
+              item.id,
+              item.parentId,
+              index
+            )
+          "
+          @mouseover="
+            lineMouseover(
+              `line${item.id}`,
+              $event,
+              item.id,
+              item.parentId,
+              index
+            )
+          "
           @mouseleave="lineMouseleave"
-          @mouseenter="lineMouseenter(`line${index}`, $event, index)"
+          @mouseenter="
+            lineMouseenter(
+              `line${item.id}`,
+              $event,
+              item.id,
+              item.parentId,
+              index
+            )
+          "
         >
           <slider
             :min="0"
             :max="100"
             v-model="item.per"
-            :index="index"
+            :id="item.id"
+            :parentId="item.parentId"
             :widths="item.widthChild"
             @thunkMousedown="thunkMousedown"
             @thunkMouseup="thunkMouseup"
@@ -209,19 +234,31 @@
             class="leftCurDrag"
             v-show="item.type == '1'"
             @mousedown.stop="
-              leftCurDragMounsedown(`line${index}`, index, $event)
+              leftCurDragMounsedown(
+                `line${item.id}`,
+                $event,
+                item.id,
+                item.parentId,
+                index
+              )
             "
           ></div>
           <div
             class="rightCurDrag"
             v-show="item.type == '1'"
             @mousedown.stop="
-              rightCurDragMounsedown(`line${index}`, index, $event)
+              rightCurDragMounsedown(
+                `line${item.id}`,
+                $event,
+                item.id,
+                item.parentId,
+                index
+              )
             "
           ></div>
           <div
             class="stoneLine"
-            :style="{ top: -12 - index * 40 + 'px' }"
+            :style="{ top: -12 + 52 - item.top + 'px' }"
             v-if="item.type == '2'"
             @mouseenter="stoneLineMouseenter"
           ></div>
@@ -232,63 +269,12 @@
         <div
           class="group"
           :style="{
-            top: index == 0 ? '52px' : index * 40 + 52 + 'px'
+            top: item.top + 'px'
           }"
-          v-if="item.type == '3' && item.children && item.children.length > 0"
-          :key="item.startTime + item.per + index + 'cmz'"
+          v-if="item.type == '3'"
+          :key="item.id + 'zzzzz'"
         >
           <div class="progress"></div>
-          <!-- <div
-          class="line"
-          v-for='(k,kindex) in item.children'
-          :key='k.id'
-          :style="{
-            left: k.left + 'px',
-            width: k.widthMe + 'px',
-            top: kindex == 0 ? item.top + 40 : index * 40 + 52 + 'px'
-          }"
-          v-show="k.type == '1' || k.type == '2'"
-          :ref="'line' + id"
-          @mousedown="lineMousedown(`line${id}`, $event, item.id,k.id)"
-          @mouseover="lineMouseover(`line${id}`, $event, item.id,k.id)"
-          @mouseleave="lineMouseleave"
-          @mouseenter="lineMouseenter(`line${id}`, $event, item.id,k.id)"
-        >
-          <slider
-            :min="0"
-            :max="100"
-            v-model="item.per"
-            :index="index"
-            :widths="item.widthChild"
-            @thunkMousedown="thunkMousedown"
-            @thunkMouseup="thunkMouseup"
-            @thunkMousemove="thunkMousemove"
-            v-show="item.type == '1'"
-          ></slider>
-          <div
-            class="leftCurDrag"
-            v-show="item.type == '1'"
-            @mousedown.stop="
-              leftCurDragMounsedown(`line${index}`, index, $event)
-            "
-          ></div>
-          <div
-            class="rightCurDrag"
-            v-show="item.type == '1'"
-            @mousedown.stop="
-              rightCurDragMounsedown(`line${index}`, index, $event)
-            "
-          ></div>
-          <div
-            class="stoneLine"
-            :style="{ top: -12 - index * 40 + 'px' }"
-            v-if="item.type == '2'"
-            @mouseenter="stoneLineMouseenter"
-          ></div>
-          <div class="milestone" v-if="item.type == '2'">
-            <i class="el-icon-check"></i>
-          </div>
-        </div> -->
         </div>
       </template>
       <transition name="el-zoom-in-center">
@@ -412,6 +398,18 @@ export default {
     };
   },
   computed: {
+    computedList() {
+      let arr = [];
+      this.list.forEach((item, index) => {
+        if (!item.children || item.children.length < 1) {
+          arr.push(item);
+        } else if (item.children && item.children.length >= 1) {
+          arr.push(item);
+          arr = arr.concat(item.children);
+        }
+      });
+      return arr;
+    },
     left() {
       return window.innerWidth - 30;
     },
@@ -431,9 +429,19 @@ export default {
   methods: {
     //分组是否展开
     handlerExpand(row, expand) {
-      this.list.find(item => {
+      let rowIndex = this.list.findIndex(item => {
         return item.id == row.id;
-      }).expand = expand;
+      });
+      this.list[rowIndex].expand = expand;
+      if (
+        this.list[rowIndex].children &&
+        this.list[rowIndex].children.length > 0
+      ) {
+        this.list[rowIndex].children.forEach(k => {
+          k.isShow = expand;
+        });
+      }
+      this.resetTop(rowIndex, !expand);
     },
     //分组添加子集
     handleGroupAdd(row) {
@@ -446,8 +454,6 @@ export default {
       // console.log(index);
       this.dialogVal = true;
       this.isChildren = true;
-      // console.log(this.isChildren);
-      // this.$set(this.isChildren, true);
     },
     //编辑
     handlerEdit(row) {
@@ -464,6 +470,8 @@ export default {
     handleSave(val, isChildren) {
       let obj = Object.assign({}, val);
       // console.log(obj);
+      let index = this.list.length;
+
       obj.per = 0;
       obj.startTime = obj.planTime.length > 0 ? obj.planTime[0] : obj.stoneTime;
       obj.endTime = obj.planTime.length > 0 ? obj.planTime[1] : obj.stoneTime;
@@ -479,6 +487,21 @@ export default {
           (Math.floor(obj.endTime - obj.startTime) / (1000 * 60 * 60 * 24)) *
             this.currentDaySize.value +
           this.currentDaySize.value;
+        if (index == 0) {
+          obj.top = 52;
+        } else {
+          if (
+            this.list[index - 1].children &&
+            this.list[index - 1].children.length > 0
+          ) {
+            obj.top =
+              this.list[index - 1].children[
+                this.list[index - 1].children.length - 1
+              ].top + 40;
+          } else {
+            obj.top = this.list[index - 1].top + 40;
+          }
+        }
       }
       if (obj.type == 2) {
         this.setStoneLine();
@@ -486,14 +509,35 @@ export default {
       if (obj.type == 3) {
         obj.id = new Date().getTime();
         obj.expand = true;
+        if (index == 0) {
+          obj.top = 52;
+        } else {
+          if (
+            this.list[index - 1].children &&
+            this.list[index - 1].children.length > 0
+          ) {
+            obj.top =
+              this.list[index - 1].children[
+                this.list[index - 1].children.length - 1
+              ].top + 40;
+          } else {
+            obj.top = this.list[index - 1].top + 40;
+          }
+        }
       }
-      if (isChildren && this.currentListIndex) {
+      obj.id = new Date().getTime();
+      obj.isShow = true;
+      // console.log(this.currentListIndex);
+      if (isChildren && this.currentListIndex !== "") {
         let s = this.list[parseInt(this.currentListIndex)];
         s.children = s.children ? s.children : [];
-        obj.id = new Date().getTime();
+        let cindex = s.children.length;
+        obj.top = 40 + cindex * 40 + s.top;
+
         obj.parentId = s.id;
         s.children.push(obj);
         // console.log(s);
+        this.resetTop(this.currentListIndex);
         this.$set(this.list, parseInt(this.currentListIndex), s);
       } else {
         this.list.push(obj);
@@ -501,6 +545,20 @@ export default {
       this.currentListIndex = "";
       this.isChildren = false;
       this.$refs.dialogAdd.resetFields();
+    },
+    resetTop(zindex, reduce) {
+      console.log(zindex);
+      let num = reduce ? -40 : 40;
+      this.list.forEach((item, index) => {
+        if (index > zindex) {
+          item.top = item.top + num;
+          if (item.children && item.children.length > 0) {
+            item.children.forEach(k => {
+              k.top = k.top + num;
+            });
+          }
+        }
+      });
     },
     //新建项目
     handlerAddGantt() {
@@ -513,10 +571,11 @@ export default {
     // 转为分组
     handlerGroup(row) {
       let index = this.list.findIndex(item => {
-        return item.name == row.name;
+        return item.id == row.id;
       });
       this.list[index].type = "3";
       this.list[index].per = 0;
+      this.list[index].id = new Date().getTime();
       this.$set(this.list, index, this.list[index]);
     },
     //里程碑去掉mouseenter显示
@@ -529,29 +588,84 @@ export default {
     },
     //转为计划任务
     handlerPlanProject(row) {
-      let index = this.list.findIndex(item => {
-        return item.name == row.name;
-      });
-      this.list[index].type = "1";
-      this.list[index].per = 50;
-      this.list[index].left =
-        row.left + row.widthMe - this.currentDaySize.value;
-      this.list[index].widthMe = this.currentDaySize.value;
-      this.list[index].widthChild = this.currentDaySize.value;
+      if (!row.parentId) {
+        let index = this.list.findIndex(item => {
+          return item.id == row.id;
+        });
+        this.list[index].type = "1";
+        this.list[index].per = 0;
+        this.list[index].left =
+          row.left + row.widthMe - this.currentDaySize.value;
+        this.list[index].widthMe = this.currentDaySize.value;
+        this.list[index].widthChild = this.currentDaySize.value;
+      } else {
+        // let cindex = this.list.findIndex(item => {
+        //   return item.id == row.parentId;
+        // });
+        // let cur = this.list.forEach(item => {
+        //   if ((item.id = row.parentId)) {
+        //     item.children.forEach(k => {
+        //       if ((k.id = row.id)) {
+        //         k.type = "1";
+        //         k.per = 0;
+        //         k.left = row.left + row.widthMe - this.currentDaySize.value;
+        //         k.widthMe = this.currentDaySize.value;
+        //         k.widthChild = this.currentDaySize.value;
+        //       }
+        //     });
+        //   }
+        // });
+        // this.$set(this.list, cindex, this.list[cindex]);
+        let cindex = this.list.findIndex(item => {
+          return item.id == row.parentId;
+        });
+        let cur = this.list.find(item => {
+          return item.id == row.parentId;
+        });
+        let cl = cur.children.find(item => {
+          return item.id == row.id;
+        });
+        cl.type = "1";
+        cl.per = 0;
+        cl.left = row.left + row.widthMe - this.currentDaySize.value;
+        cl.widthMe = cl.widthChild = this.currentDaySize.value;
+        // cl.widthChild = this.currentDaySize.value;
+        this.$set(this.list, cindex, cur);
+      }
     },
     //转化为里程碑
     handlerMilestone(row) {
-      let index = this.list.findIndex(item => {
-        return item.name == row.name;
-      });
-      this.list[index].per = 100;
-      this.list[index].type = "2";
-      // let endTimeWidth = row.left + row.widthMe;
-      this.list[index].left =
-        row.left + row.widthMe - this.currentDaySize.value;
-      this.list[index].widthMe = this.currentDaySize.value;
-      this.list[index].widthChild = this.currentDaySize.value;
-      this.setStoneLine();
+      if (!row.parentId) {
+        let index = this.list.findIndex(item => {
+          return item.id == row.id;
+        });
+        this.list[index].per = 100;
+        this.list[index].type = "2";
+        // let endTimeWidth = row.left + row.widthMe;
+        this.list[index].left =
+          row.left + row.widthMe - this.currentDaySize.value;
+        this.list[index].widthMe = this.currentDaySize.value;
+        this.list[index].widthChild = this.currentDaySize.value;
+        this.setStoneLine();
+      } else {
+        let cindex = this.list.findIndex(item => {
+          return item.id == row.parentId;
+        });
+        let cur = this.list.find(item => {
+          return item.id == row.parentId;
+        });
+        let cl = cur.children.find(item => {
+          return item.id == row.id;
+        });
+        cl.type = "2";
+        cl.per = 100;
+        cl.left = row.left + row.widthMe - this.currentDaySize.value;
+        cl.widthMe = this.currentDaySize.value;
+        cl.widthChild = this.currentDaySize.value;
+        this.$set(this.list, cindex, cur);
+        this.setStoneLine();
+      }
+      // this.setStoneLine();
     },
     //leftMenu宽度设置
     rightLineMousedown(e) {
@@ -593,27 +707,46 @@ export default {
       this.isShowMsg = false;
     },
     //滑动进度条事件
-    thunkMouseup(per, e, index) {
-      console.log(per, index);
-      this.list[index].per = per;
-      this.$set(this.list, index, this.list[index]);
-      this.checkIsin(e, index);
+    thunkMouseup(per, e, id, parentId) {
+      // console.log(per, id, parentId);
+      if (parentId) {
+        this.list.forEach(item => {
+          if (item.id == parentId) {
+            item.children.forEach(k => {
+              if (k.id == id) {
+                k.per = per;
+              }
+            });
+          }
+        });
+      } else {
+        this.list.forEach((item, index) => {
+          if (item.id == id) {
+            item.per = per;
+          }
+        });
+      }
+      // this.$set(this.list, index, this.list[index]);
+      // console.log(this.list);
+      // this.list[index].per = per;
+      // this.list
+      // this.checkIsin(e, id, parentId);
     },
     //根据index值和e判断是否在当前line的范围里，是否展示时间和msg框
-    checkIsin(events, index) {
-      let line = this.$refs[`line${index}`][0];
+    checkIsin(dom, events, id, parentId, index) {
+      let line = this.$refs[dom][0];
       let lineTop = parseInt(line.style.top);
       let lineDown = lineTop + 16;
       let lineLeft = parseInt(line.style.left);
-      let lineRight = parseInt(this.list[index].widthMe) + lineLeft;
+      let lineRight = parseInt(this.computedList[index].widthMe) + lineLeft;
       if (
         events.pageX - this.rightLineX >= lineLeft &&
         events.pageX - this.rightLineX <= lineRight &&
         events.y >= lineTop &&
         events.y <= lineDown
       ) {
-        this.lineMouseover(`line${index}`, events, index, true);
-        this.lineMouseenter(`line${index}`, events, index, true);
+        this.lineMouseover(dom, events, id, parentId, index);
+        this.lineMouseenter(dom, events, id, parentId, index);
       } else {
         this.isShowMsg = false;
         this.currentLineDay = {
@@ -645,7 +778,7 @@ export default {
      * @param  {Object} e $event
      * @param  {Number} index index
      */
-    leftCurDragMounsedown(dom, index, e) {
+    leftCurDragMounsedown(dom, e, id, parentId, index) {
       let line = this.$refs[dom][0];
       let cx = e.pageX;
       let result;
@@ -686,13 +819,13 @@ export default {
             addwidth = -(event.pageX - cx);
           }
         }
-        result = this.list[index].widthMe + addwidth;
-        result1 = this.list[index].left - addwidth;
+        result = this.computedList[index].widthMe + addwidth;
+        result1 = this.computedList[index].left - addwidth;
         if (result <= this.currentDaySize.value) {
           result = this.currentDaySize.value;
           result1 =
-            this.list[index].left +
-            this.list[index].widthMe -
+            this.computedList[index].left +
+            this.computedList[index].widthMe -
             this.currentDaySize.value;
         } else if (result1 <= 0) {
           result1 = 0;
@@ -700,8 +833,8 @@ export default {
         }
         line.style.width = result + "px";
         line.style.left = result1 + "px";
-        this.list[index].widthChild = result;
-        this.lineMouseover(dom, e, index, true);
+        this.computedList[index].widthChild = result;
+        this.lineMouseover(dom, e, id, parentId, index);
         this.lineMouseleave(e, true);
       };
       document.onmouseup = events => {
@@ -719,12 +852,31 @@ export default {
         result1 =
           Math.round(parseInt(line.style.left) / this.currentDaySize.value) *
           this.currentDaySize.value;
-        this.list[index].widthMe = result;
-        this.list[index].widthChild = result;
+        this.computedList[index].widthMe = result;
+        this.computedList[index].widthChild = result;
         line.style.width = result + "px";
-        this.list[index].left = result1;
+        this.computedList[index].left = result1;
         line.style.left = result1 + "px";
-        this.checkIsin(events, index);
+        this.checkIsin(dom, e, id, parentId, index);
+        if (parentId) {
+          this.list.forEach(item => {
+            if (item.id == parentId) {
+              item.children.forEach(k => {
+                if (k.id == id) {
+                  k.widthMe = k.widthChild = result;
+                  k.left = result1;
+                }
+              });
+            }
+          });
+        } else {
+          this.list.forEach((item, index) => {
+            if (item.id == id) {
+              item.widthMe = item.widthChild = result;
+              item.left = result1;
+            }
+          });
+        }
         document.onmousemove = document.onmouseup = null;
       };
     },
@@ -734,7 +886,7 @@ export default {
      * @param  {Object} e $event
      * @param  {Number} index index
      */
-    rightCurDragMounsedown(dom, index, e) {
+    rightCurDragMounsedown(dom, e, id, parentId, index) {
       let line = this.$refs[dom][0];
       let cx = e.pageX;
       let result;
@@ -769,7 +921,7 @@ export default {
           timers = null;
           addwidth = event.pageX - cx;
         }
-        result = this.list[index].widthMe + addwidth;
+        result = this.computedList[index].widthMe + addwidth;
         if (
           result + parseInt(line.style.left) >=
           this.days.length * this.currentDaySize.value
@@ -779,15 +931,15 @@ export default {
             parseInt(line.style.left);
         }
         line.style.width = result + "px";
-        this.list[index].widthChild = result;
+        this.computedList[index].widthChild = result;
         // console.log(line.style.width);
         if (result <= this.currentDaySize.value) {
           result = this.currentDaySize.value;
           line.style.width = result + "px";
-          this.list[index].widthMe = result;
-          this.list[index].widthChild = result;
+          this.computedList[index].widthMe = result;
+          this.computedList[index].widthChild = result;
         }
-        this.lineMouseover(dom, e, index, true);
+        this.lineMouseover(dom, e, id, parentId, index);
         this.lineMouseleave(e, true);
       };
       document.onmouseup = events => {
@@ -802,10 +954,29 @@ export default {
         result =
           Math.round(result / this.currentDaySize.value) *
           this.currentDaySize.value;
-        this.list[index].widthMe = result;
-        this.list[index].widthChild = result;
+        this.computedList[index].widthMe = result;
+        this.computedList[index].widthChild = result;
         line.style.width = result + "px";
-        this.checkIsin(events, index);
+        this.checkIsin(dom, e, id, parentId, index);
+        if (parentId) {
+          this.list.forEach(item => {
+            if (item.id == parentId) {
+              item.children.forEach(k => {
+                if (k.id == id) {
+                  k.widthMe = k.widthChild = result;
+                  // k.left = result1;
+                }
+              });
+            }
+          });
+        } else {
+          this.list.forEach((item, index) => {
+            if (item.id == id) {
+              item.widthMe = item.widthChild = result;
+              // item.left = result1;
+            }
+          });
+        }
         document.onmousemove = document.onmouseup = null;
       };
     },
@@ -833,7 +1004,8 @@ export default {
      * @param  {Number} index index
      */
     //鼠标悬停展示上部日期
-    lineMouseover(dom, e, index, ismove) {
+    lineMouseover(dom, e, id, parentId, index) {
+      // console.log(this.$refs[dom]);
       let start =
         Math.round(
           parseInt(this.$refs[dom][0].style.left) / this.currentDaySize.value
@@ -857,7 +1029,7 @@ export default {
      * @param  {Number} index index
      */
     //鼠标进入显示当前项目的基本信息框
-    lineMouseenter(dom, e, index) {
+    lineMouseenter(dom, e, id, parentId, index) {
       let start =
         Math.round(
           parseInt(this.$refs[dom][0].style.left) / this.currentDaySize.value
@@ -870,9 +1042,9 @@ export default {
           this.currentDaySize.value -
         this.currentDaySize.value;
       this.currentProjectMsg = {
-        name: this.list[index].name,
+        name: this.computedList[index].name,
         allTime: (end - start) / this.currentDaySize.value + 1,
-        per: this.list[index].per,
+        per: this.computedList[index].per,
         startTime: this.computedWithTime(start),
         endTime: this.computedWithTime(end),
         left:
@@ -924,7 +1096,7 @@ export default {
      * @param  {Object} e $event
      * @param  {Number} index index
      */
-    lineMousedown(dom, e, index) {
+    lineMousedown(dom, e, id, parentId, index) {
       let line = this.$refs[dom][0];
       let cx = e.clientX;
       let cp = e.pageX;
@@ -937,23 +1109,23 @@ export default {
           z = window.scrollX + this.currentDaySize.value;
           window.scrollTo(z, 0);
           let newWith = event.pageX - cp;
-          result = this.list[index].left + newWith;
+          result = this.computedList[index].left + newWith;
           line.style.left = result + "px";
           if (result <= 0) result = 0;
         } else if (event.clientX <= 40 + this.rightLineX) {
           z = window.scrollX - this.currentDaySize.value;
           window.scrollTo(z, 0);
           let newWith = event.pageX - cp;
-          result = this.list[index].left + newWith;
+          result = this.computedList[index].left + newWith;
           if (result <= 0) result = 0;
           line.style.left = result + "px";
         } else {
           let newWith = event.pageX - cp;
-          result = this.list[index].left + newWith;
+          result = this.computedList[index].left + newWith;
           if (result <= 0) result = 0;
           line.style.left = result + "px";
         }
-        this.lineMouseover(dom, event, index, true);
+        this.lineMouseover(dom, e, id, parentId, index);
         this.lineMouseleave(e, true);
       };
       document.onmouseup = events => {
@@ -964,9 +1136,26 @@ export default {
         left =
           Math.round(result / this.currentDaySize.value) *
           this.currentDaySize.value;
-        this.list[index].left = left;
+        this.computedList[index].left = left;
         line.style.left = left + "px";
-        this.checkIsin(events, index);
+        this.checkIsin(dom, e, id, parentId, index);
+        if (parentId) {
+          this.list.forEach(item => {
+            if (item.id == parentId) {
+              item.children.forEach(k => {
+                if (k.id == id) {
+                  k.left = left;
+                }
+              });
+            }
+          });
+        } else {
+          this.list.forEach((item, index) => {
+            if (item.id == id) {
+              item.left = left;
+            }
+          });
+        }
         document.onmousemove = document.onmouseup = null;
       };
     },
@@ -1102,96 +1291,96 @@ export default {
       };
     },
     setList() {
-      this.list = [
-        {
-          per: 40,
-          startTime: new Date("2018/01/15").getTime(),
-          endTime: new Date("2018/01/25").getTime(),
-          left:
-            (Math.floor(
-              new Date("2018/01/15").getTime() -
-                new Date("2018/01/01").getTime()
-            ) /
-              (1000 * 60 * 60 * 24)) *
-            this.currentDaySize.value,
-          widthMe:
-            (Math.floor(
-              new Date("2018/01/25").getTime() -
-                new Date("2018/01/15").getTime()
-            ) /
-              (1000 * 60 * 60 * 24)) *
-              this.currentDaySize.value +
-            this.currentDaySize.value,
-          widthChild:
-            (Math.floor(
-              new Date("2018/01/25").getTime() -
-                new Date("2018/01/15").getTime()
-            ) /
-              (1000 * 60 * 60 * 24)) *
-              this.currentDaySize.value +
-            this.currentDaySize.value,
-          name: "测试1",
-          ower: "曹梦哲",
-          type: "1"
-        },
-        {
-          name: "测试2",
-          ower: "曹梦哲",
-          type: "1",
-          per: 55,
-          startTime: new Date("2018/12/20").getTime(),
-          endTime: new Date("2019/1/3").getTime(),
-          left:
-            (Math.floor(
-              new Date("2018/12/20").getTime() -
-                new Date("2018/01/01").getTime()
-            ) /
-              (1000 * 60 * 60 * 24)) *
-            this.currentDaySize.value,
-          widthMe:
-            (Math.floor(
-              new Date("2019/1/3").getTime() - new Date("2018/12/20").getTime()
-            ) /
-              (1000 * 60 * 60 * 24)) *
-              this.currentDaySize.value +
-            this.currentDaySize.value,
-          widthChild:
-            (Math.floor(
-              new Date("2019/1/3").getTime() - new Date("2018/12/20").getTime()
-            ) /
-              (1000 * 60 * 60 * 24)) *
-              this.currentDaySize.value +
-            this.currentDaySize.value
-        },
-        {
-          children: [
-            {
-              endTime: 1569168000000,
-              id: 1566892053776,
-              left: 24120,
-              name: "zzzzzzz",
-              ower: "",
-              parentId: 1566892046489,
-              per: 0,
-              startTime: 1566835200000,
-              stoneTime: "",
-              type: "1",
-              widthChild: 1120,
-              widthMe: 1120
-            }
-          ],
-          endTime: "",
-          id: 1566892046489,
-          name: "asdasdasd",
-          ower: "",
-          per: 0,
-          planTime: [],
-          startTime: "",
-          stoneTime: "",
-          type: "3",
-          expand: true
-        }
-      ];
+      // this.list = [
+      //   {
+      //     per: 40,
+      //     startTime: new Date("2018/01/15").getTime(),
+      //     endTime: new Date("2018/01/25").getTime(),
+      //     left:
+      //       (Math.floor(
+      //         new Date("2018/01/15").getTime() -
+      //           new Date("2018/01/01").getTime()
+      //       ) /
+      //         (1000 * 60 * 60 * 24)) *
+      //       this.currentDaySize.value,
+      //     widthMe:
+      //       (Math.floor(
+      //         new Date("2018/01/25").getTime() -
+      //           new Date("2018/01/15").getTime()
+      //       ) /
+      //         (1000 * 60 * 60 * 24)) *
+      //         this.currentDaySize.value +
+      //       this.currentDaySize.value,
+      //     widthChild:
+      //       (Math.floor(
+      //         new Date("2018/01/25").getTime() -
+      //           new Date("2018/01/15").getTime()
+      //       ) /
+      //         (1000 * 60 * 60 * 24)) *
+      //         this.currentDaySize.value +
+      //       this.currentDaySize.value,
+      //     name: "测试1",
+      //     ower: "曹梦哲",
+      //     type: "1"
+      //   },
+      //   {
+      //     name: "测试2",
+      //     ower: "曹梦哲",
+      //     type: "1",
+      //     per: 55,
+      //     startTime: new Date("2018/12/20").getTime(),
+      //     endTime: new Date("2019/1/3").getTime(),
+      //     left:
+      //       (Math.floor(
+      //         new Date("2018/12/20").getTime() -
+      //           new Date("2018/01/01").getTime()
+      //       ) /
+      //         (1000 * 60 * 60 * 24)) *
+      //       this.currentDaySize.value,
+      //     widthMe:
+      //       (Math.floor(
+      //         new Date("2019/1/3").getTime() - new Date("2018/12/20").getTime()
+      //       ) /
+      //         (1000 * 60 * 60 * 24)) *
+      //         this.currentDaySize.value +
+      //       this.currentDaySize.value,
+      //     widthChild:
+      //       (Math.floor(
+      //         new Date("2019/1/3").getTime() - new Date("2018/12/20").getTime()
+      //       ) /
+      //         (1000 * 60 * 60 * 24)) *
+      //         this.currentDaySize.value +
+      //       this.currentDaySize.value
+      //   },
+      //   {
+      //     children: [
+      //       {
+      //         endTime: 1569168000000,
+      //         id: 1566892053776,
+      //         left: 24120,
+      //         name: "zzzzzzz",
+      //         ower: "",
+      //         parentId: 1566892046489,
+      //         per: 0,
+      //         startTime: 1566835200000,
+      //         stoneTime: "",
+      //         type: "1",
+      //         widthChild: 1120,
+      //         widthMe: 1120
+      //       }
+      //     ],
+      //     endTime: "",
+      //     id: 1566892046489,
+      //     name: "asdasdasd",
+      //     ower: "",
+      //     per: 0,
+      //     planTime: [],
+      //     startTime: "",
+      //     stoneTime: "",
+      //     type: "3",
+      //     expand: true
+      //   }
+      // ];
     },
     //设置里程碑线的高度
     setStoneLine() {
@@ -1225,6 +1414,26 @@ export default {
         item.widthChild = (item.widthChild / oldValue.value) * newValue.value;
       });
     }
+    // list: {
+    //   handler: function(val) {
+    //     let arr = [];
+    //     val.forEach((item, index) => {
+    //       if (!item.children || item.children.length < 1) {
+    //         arr.push(item);
+    //       } else if (item.children && item.children.length >= 1) {
+    //         arr.push(item);
+    //         arr = arr.concat(item.children);
+    //         // console.log(item.children);
+    //         console.log(arr);
+    //       }
+    //     });
+    //     arr.forEach(item => {
+    //       item.isShow = true;
+    //     });
+    //     this.computedList = arr;
+    //   },
+    //   deep: true
+    // }
   },
   mounted() {
     document.addEventListener("scroll", this.handleScroll);
@@ -1359,60 +1568,7 @@ export default {
         }
       }
     }
-    .line {
-      position: absolute;
-      .rightCurDrag {
-        cursor: e-resize;
-        width: 10px;
-        background-color: #000;
-        height: 16px;
-        position: absolute;
-        right: -15px;
-        transform: translateY(-50%);
-        top: 50%;
-        border-radius: 3px;
-        user-select: none;
-      }
-      .leftCurDrag {
-        cursor: e-resize;
-        width: 10px;
-        background-color: #000;
-        height: 16px !important;
-        position: absolute;
-        left: -15px;
-        transform: translateY(-50%);
-        top: 50%;
-        border-radius: 3px;
-        user-select: none;
-      }
-      .stoneLine {
-        position: absolute;
-        top: 0px;
-        left: 50%;
-        margin-left: -1px;
-        width: 2px;
-        background-color: #24b47e;
-      }
-      .milestone {
-        position: absolute;
-        left: 50%;
-        // transform: translateX(-50%);
-        cursor: move;
-        margin-left: -10px;
-        width: 20px;
-        height: 20px;
-        background-color: #24b47e;
-        transform: rotate(-45deg);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        i {
-          transform: rotate(45deg);
-          color: #fff;
-          z-index: 1;
-        }
-      }
-    }
+
     .group {
       position: absolute;
       background-color: #909090 !important;
@@ -1429,13 +1585,67 @@ export default {
         0 100%,
         0 0
       );
-      > div {
-        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-      }
+      // > div {
+      //   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      // }
       .progress {
         // width: 50px;
         background-color: #606060 !important;
         height: 100%;
+      }
+    }
+  }
+  .line {
+    position: absolute;
+    .rightCurDrag {
+      cursor: e-resize;
+      width: 10px;
+      background-color: #000;
+      height: 16px;
+      position: absolute;
+      right: -15px;
+      transform: translateY(-50%);
+      top: 50%;
+      border-radius: 3px;
+      user-select: none;
+    }
+    .leftCurDrag {
+      cursor: e-resize;
+      width: 10px;
+      background-color: #000;
+      height: 16px !important;
+      position: absolute;
+      left: -15px;
+      transform: translateY(-50%);
+      top: 50%;
+      border-radius: 3px;
+      user-select: none;
+    }
+    .stoneLine {
+      position: absolute;
+      top: 0px;
+      left: 50%;
+      margin-left: -1px;
+      width: 2px;
+      background-color: #24b47e;
+    }
+    .milestone {
+      position: absolute;
+      left: 50%;
+      // transform: translateX(-50%);
+      cursor: move;
+      margin-left: -10px;
+      width: 20px;
+      height: 20px;
+      background-color: #24b47e;
+      transform: rotate(-45deg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      i {
+        transform: rotate(45deg);
+        color: #fff;
+        z-index: 1;
       }
     }
   }

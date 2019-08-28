@@ -19,7 +19,7 @@
  * v-model 对当前值进行双向绑定实时显示拖拽进度
  * */
 export default {
-  props: ["min", "max", "value", "widths", "index"],
+  props: ["min", "max", "value", "widths", "id", "parentId"],
   data() {
     return {
       slider: null, //滚动条DOM元素
@@ -53,7 +53,8 @@ export default {
           "thunkMouseup",
           parseInt(this.scale * 100),
           event,
-          this.index
+          this.id,
+          this.parentId
         );
         document.onmousemove = document.onmouseup = null;
       };

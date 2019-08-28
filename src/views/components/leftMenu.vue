@@ -75,7 +75,7 @@
         <div
           class="item"
           v-for="(item, index) in menuLists"
-          @click="handleMenuClick(index)"
+          @click="handleMenuClick(index, item)"
           :key="item + index"
         >
           {{ item }}
@@ -205,6 +205,9 @@ export default {
       // console.log(row, e);
       // this.menuLists[1] = this.projectType[row.type];
       this.menuLists = ["编辑", "里程碑", "分组", "删除"];
+      if (row.parentId) {
+        this.menuLists = ["编辑", "里程碑", "删除"];
+      }
       if (row.type == "1") {
         this.menuLists[1] = "里程碑";
       } else if (row.type == "2") {
@@ -221,7 +224,7 @@ export default {
     handleShowHeaderCheckBox() {
       this.isShowHeaderBox = !this.isShowHeaderBox;
     },
-    handleMenuClick(index) {
+    handleMenuClick(index, name) {
       this.menuOpen = false;
       if (index == 3) {
         this.$confirm("此操作将永久删除该项目, 是否继续?", "提示", {
@@ -255,7 +258,7 @@ export default {
       } else if (index == 0) {
         this.$emit("handlerEdit", this.currentRow);
       } else if (index == 2) {
-        if (this.currentRow.type == 3) {
+        if (this.currentRow.type == 3 || name == "删除") {
           console.log("删除分组");
           return;
         }
