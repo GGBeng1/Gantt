@@ -6,12 +6,14 @@
       @click="maskClick"
     ></div>
     <el-table
+      ref="tableMenu"
       :data="tableData"
       border
       fit
       style="width: 100%"
       row-key="id"
       default-expand-all
+      highlight-current-row
       @row-click="handlerRowClick"
       @expand-change="handlerExpand"
       :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
@@ -179,6 +181,10 @@ export default {
     };
   },
   methods: {
+    handlerSelect(row) {
+      // console.log(row);
+      this.$refs.tableMenu.setCurrentRow(row);
+    },
     handlerExpand(row, expand) {
       // console.log(row, expanded);
       this.$emit("handlerExpand", row, expand);
@@ -198,7 +204,8 @@ export default {
       this.menuOpen = false;
       this.currentRow = {};
     },
-    handlerRowClick(row) {
+    handlerRowClick(row, column) {
+      console.log(column);
       if (row.type != 3) {
         this.$emit("handlerRowClick", row);
       }
