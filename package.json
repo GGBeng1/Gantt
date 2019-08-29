@@ -10,7 +10,7 @@
   "dependencies": {
     "core-js": "^2.6.5",
     "dhtmlx-gantt": "^6.2.1",
-    "element-ui": "2.9.2",
+    "element-ui": "^2.12.0",
     "vue": "^2.6.10",
     "vue-function-api": "^2.1.2",
     "vue-router": "^3.0.3",

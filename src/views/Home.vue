@@ -320,9 +320,11 @@
       :append-to-body="true"
     >
       <dialogAdd
+        :title="title"
         :dialogVal.sync="dialogVal"
         :isChildren="isChildren"
         @submit="handleSave"
+        @handleEditSave="handleEditSave"
         @onCancle="onCancle"
         ref="dialogAdd"
       ></dialogAdd>
@@ -398,7 +400,9 @@ export default {
       },
       isHover: false,
       showFixdTopMonth: false,
-      currentListIndex: ""
+      currentListIndex: "",
+      //正在编辑的row
+      editRow: []
     };
   },
   computed: {
@@ -465,17 +469,77 @@ export default {
     //编辑
     handlerEdit(row) {
       // console.log(row);
+      this.title = "编辑";
+      let obj = {};
+      if (row.parentId) {
+        this.editRow[0] = row.parentId;
+        this.editRow[1] = row.id;
+        let parent = this.list.find(item => {
+          return item.id == row.parentId;
+        });
+        let cur = parent.children.find(item => {
+          return item.id == row.id;
+        });
+        // console.log(obj);
+        let { name, ower, type, planTime, stoneTime } = cur;
+        obj = { name, ower, type, planTime, stoneTime };
+        obj.planTime[0] = this.computedWithTime(cur.left, true);
+        obj.planTime[1] = this.computedWithTime(
+          cur.left + cur.widthMe - this.currentDaySize.value,
+          true
+        );
+        this.$refs.dialogAdd.form = obj;
+      } else {
+        this.editRow[0] = row.id;
+        let cur = this.list.find(item => {
+          return item.id == row.id;
+        });
+        let { name, ower, type, planTime, stoneTime } = cur;
+        obj = { name, ower, type, planTime, stoneTime };
+        obj.planTime[0] = this.computedWithTime(cur.left, true);
+        obj.planTime[1] = this.computedWithTime(
+          cur.left + cur.widthMe - this.currentDaySize.value,
+          true
+        );
+        this.$refs.dialogAdd.form = obj;
+      }
+      this.dialogVal = true;
     },
     //beforClose
     hanleClose(done) {
       this.currentListIndex = "";
       this.isChildren = false;
+      this.editRow = [];
       this.$refs.dialogAdd.resetFields();
       done();
     },
     onCancle() {
       this.currentListIndex = "";
       this.isChildren = false;
+      this.editRow = [];
+    },
+    handleEditSave(row) {
+      // console.log(row);
+      // if (this.editRow.length == 1) {
+      //   let cur = this.list.find(item => {
+      //     return item.id == this.editRow[0];
+      //   });
+      //   cur = Object.assign(cur, row);
+      //   cur.planTime = row.planTime;
+      //   cur.startTime =
+      //     row.planTime.length > 0 ? row.planTime[0] : row.stoneTime;
+      //   cur.endTime = row.planTime.length > 0 ? row.planTime[1] : row.stoneTime;
+      // } else if (this.editRow.length == 2) {
+      //   let parent = this.list.find(item => {
+      //     return item.id == this.editRow[0];
+      //   });
+      //   let cur = parent.children.find(item => {
+      //     return item.id == this.editRow[1];
+      //   });
+      //   cur = Object.assign(cur, row);
+      //   cur.planTime = row.planTime;
+      // }
+      // this.editRow = [];
     },
     //新建保存
     async handleSave(val, isChildren) {
@@ -1039,7 +1103,7 @@ export default {
     //根据距离计算时间
     /**
      * @param  {Number} width
-     * @param  {Number} time
+     * @param  {Boolean|String} time
      */
     computedWithTime(width, time) {
       let startTime =
