@@ -1,35 +1,35 @@
 # Gantt
 
-## Project setup
+## 安装
 
 ```
 yarn install
 ```
 
-### Compiles and hot-reloads for development
+### 运行
 
 ```
 yarn run serve
 ```
 
-### Compiles and minifies for production
+### 说明
 
 ```
-yarn run build
-```
+基于vue开发的甘特图展现，这里的代码只有一部分，删除和编辑没有写。
 
-### Run your tests
-
-```
-yarn run test
-```
-
-### Lints and fixes files
+支持分组
+支持拖拽
+支持拉伸
+支持百分比
+支持时间跨度：天，周，月
+目前只写了一级分组，为了避免二级或者多级分组，在上一次提交中重构了部分代码，支持多级分组，但是当前版本没有开发
 
 ```
-yarn run lint
-```
 
-### Customize configuration
+### 查看示例
 
-See [Configuration Reference](https://cli.vuejs.org/config/).
+See [demo](https://ggbeng1.github.io/Gantt/#/)
+
+### 展示图
+
+<img src="public/demo.png" alt="">
