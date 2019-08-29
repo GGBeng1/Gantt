@@ -269,12 +269,14 @@
         <div
           class="group"
           :style="{
-            top: item.top + 'px'
+            top: item.top + 'px',
+            left: item.left + 'px',
+            width: item.widthMe + 'px'
           }"
           v-if="item.type == '3'"
           :key="item.id + 'zzzzz'"
         >
-          <div class="progress"></div>
+          <div class="progress" :style="{ width: item.per + '%' }"></div>
         </div>
       </template>
       <transition name="el-zoom-in-center">
@@ -467,11 +469,10 @@ export default {
       done();
     },
     //新建保存
-    handleSave(val, isChildren) {
+    async handleSave(val, isChildren) {
       let obj = Object.assign({}, val);
       // console.log(obj);
       let index = this.list.length;
-
       obj.per = 0;
       obj.startTime = obj.planTime.length > 0 ? obj.planTime[0] : obj.stoneTime;
       obj.endTime = obj.planTime.length > 0 ? obj.planTime[1] : obj.stoneTime;
@@ -533,10 +534,11 @@ export default {
         s.children = s.children ? s.children : [];
         let cindex = s.children.length;
         obj.top = 40 + cindex * 40 + s.top;
-
         obj.parentId = s.id;
         s.children.push(obj);
         // console.log(s);
+        this.setGroupWidth(s.id);
+        this.setGroupPer(s.id);
         this.resetTop(this.currentListIndex);
         this.$set(this.list, parseInt(this.currentListIndex), s);
       } else {
@@ -559,6 +561,55 @@ export default {
           }
         }
       });
+    },
+    //根据id设置group的宽度
+    setGroupWidth(id) {
+      let parent = this.list.find(item => {
+        return item.id == id;
+      });
+      // console.log(parent, 111111111111111111);
+      let left = Math.min.apply(
+        Math,
+        parent.children.map(o => {
+          return o.left;
+        })
+      );
+      let arr = [];
+      parent.children.forEach(item => {
+        arr.push(item.left + item.widthMe);
+      });
+      let width = Math.max.apply(Math, arr);
+      let widthMe = width - left;
+      parent.widthMe = parent.widthChild = widthMe;
+      parent.left = left;
+      // return parent;
+    },
+    setComputedListGroupWidth(id) {
+      if (!id) return;
+      let parent = this.computedList.find(item => {
+        return item.id == id;
+      });
+      let arr = [];
+      this.computedList.forEach(item => {
+        if (item.parentId == id) {
+          arr.push(item);
+        }
+      });
+      console.log(parent, arr);
+      let left = Math.max.apply(
+        Math,
+        arr.map(o => {
+          return o.left;
+        })
+      );
+      let widthMe = Math.min.apply(
+        Math,
+        arr.map(o => {
+          return o.widthMe;
+        })
+      );
+      parent.widthMe = parent.widthChild = widthMe;
+      parent.left = left;
     },
     //新建项目
     handlerAddGantt() {
@@ -599,38 +650,18 @@ export default {
         this.list[index].widthMe = this.currentDaySize.value;
         this.list[index].widthChild = this.currentDaySize.value;
       } else {
-        // let cindex = this.list.findIndex(item => {
-        //   return item.id == row.parentId;
-        // });
-        // let cur = this.list.forEach(item => {
-        //   if ((item.id = row.parentId)) {
-        //     item.children.forEach(k => {
-        //       if ((k.id = row.id)) {
-        //         k.type = "1";
-        //         k.per = 0;
-        //         k.left = row.left + row.widthMe - this.currentDaySize.value;
-        //         k.widthMe = this.currentDaySize.value;
-        //         k.widthChild = this.currentDaySize.value;
-        //       }
-        //     });
-        //   }
-        // });
-        // this.$set(this.list, cindex, this.list[cindex]);
         let cindex = this.list.findIndex(item => {
           return item.id == row.parentId;
         });
-        let cur = this.list.find(item => {
-          return item.id == row.parentId;
+        this.list[cindex].children.forEach(cl => {
+          if (cl.id == row.id) {
+            cl.type = "1";
+            cl.per = 0;
+            cl.left = row.left + row.widthMe - this.currentDaySize.value;
+            cl.widthMe = cl.widthChild = this.currentDaySize.value;
+          }
         });
-        let cl = cur.children.find(item => {
-          return item.id == row.id;
-        });
-        cl.type = "1";
-        cl.per = 0;
-        cl.left = row.left + row.widthMe - this.currentDaySize.value;
-        cl.widthMe = cl.widthChild = this.currentDaySize.value;
-        // cl.widthChild = this.currentDaySize.value;
-        this.$set(this.list, cindex, cur);
+        this.$set(this.list, cindex, this.list[cindex]);
       }
     },
     //转化为里程碑
@@ -665,7 +696,6 @@ export default {
         this.$set(this.list, cindex, cur);
         this.setStoneLine();
       }
-      // this.setStoneLine();
     },
     //leftMenu宽度设置
     rightLineMousedown(e) {
@@ -709,7 +739,13 @@ export default {
     //滑动进度条事件
     thunkMouseup(per, e, id, parentId) {
       // console.log(per, id, parentId);
+      let cindex = this.computedList.findIndex(z => {
+        return z.id == id;
+      });
       if (parentId) {
+        let index = this.list.findIndex(k => {
+          return (k.id = parentId);
+        });
         this.list.forEach(item => {
           if (item.id == parentId) {
             item.children.forEach(k => {
@@ -719,6 +755,8 @@ export default {
             });
           }
         });
+        this.setGroupPer(parentId);
+        this.$set(this.list, index, this.list[index]);
       } else {
         this.list.forEach((item, index) => {
           if (item.id == id) {
@@ -726,34 +764,22 @@ export default {
           }
         });
       }
-      // this.$set(this.list, index, this.list[index]);
       // console.log(this.list);
       // this.list[index].per = per;
       // this.list
-      // this.checkIsin(e, id, parentId);
+      this.checkIsin(`line${id}`, e, id, parentId, cindex);
     },
-    //根据index值和e判断是否在当前line的范围里，是否展示时间和msg框
-    checkIsin(dom, events, id, parentId, index) {
-      let line = this.$refs[dom][0];
-      let lineTop = parseInt(line.style.top);
-      let lineDown = lineTop + 16;
-      let lineLeft = parseInt(line.style.left);
-      let lineRight = parseInt(this.computedList[index].widthMe) + lineLeft;
-      if (
-        events.pageX - this.rightLineX >= lineLeft &&
-        events.pageX - this.rightLineX <= lineRight &&
-        events.y >= lineTop &&
-        events.y <= lineDown
-      ) {
-        this.lineMouseover(dom, events, id, parentId, index);
-        this.lineMouseenter(dom, events, id, parentId, index);
-      } else {
-        this.isShowMsg = false;
-        this.currentLineDay = {
-          start: 0,
-          end: 0
-        };
-      }
+    setGroupPer(id) {
+      let z = this.list.find(o => {
+        return o.id == id;
+      });
+      let count = 0;
+      let length = z.children.length;
+      // console.log(111111111111111111111111, z, length);
+      z.children.forEach(item => {
+        count = count + (item.per / 100) * (1 / length);
+      });
+      z.per = Math.round(count * 100);
     },
     //回到今天
     handleGoToday() {
@@ -833,7 +859,8 @@ export default {
         }
         line.style.width = result + "px";
         line.style.left = result1 + "px";
-        this.computedList[index].widthChild = result;
+        // this.computedList[index].widthChild = result;
+        // this.setComputedListGroupWidth(parentId);
         this.lineMouseover(dom, e, id, parentId, index);
         this.lineMouseleave(e, true);
       };
@@ -857,7 +884,8 @@ export default {
         line.style.width = result + "px";
         this.computedList[index].left = result1;
         line.style.left = result1 + "px";
-        this.checkIsin(dom, e, id, parentId, index);
+        this.checkIsin(dom, events, id, parentId, index);
+        // this.setComputedListGroupWidth(parentId);
         if (parentId) {
           this.list.forEach(item => {
             if (item.id == parentId) {
@@ -869,6 +897,7 @@ export default {
               });
             }
           });
+          this.setGroupWidth(parentId);
         } else {
           this.list.forEach((item, index) => {
             if (item.id == id) {
@@ -957,7 +986,7 @@ export default {
         this.computedList[index].widthMe = result;
         this.computedList[index].widthChild = result;
         line.style.width = result + "px";
-        this.checkIsin(dom, e, id, parentId, index);
+        this.checkIsin(dom, events, id, parentId, index);
         if (parentId) {
           this.list.forEach(item => {
             if (item.id == parentId) {
@@ -969,6 +998,7 @@ export default {
               });
             }
           });
+          this.setGroupWidth(parentId);
         } else {
           this.list.forEach((item, index) => {
             if (item.id == id) {
@@ -998,6 +1028,36 @@ export default {
         return `${s.getFullYear()}年${s.getMonth() + 1}月${s.getDate()}日`;
       }
     },
+    //根据index值和e判断是否在当前line的范围里，是否展示时间和msg框
+    checkIsin(dom, events, id, parentId, index) {
+      let line = this.$refs[dom][0];
+      let lineTop = parseInt(line.style.top);
+      let lineDown = lineTop + 16;
+      let lineLeft = parseInt(line.style.left);
+      let lineRight = parseInt(this.computedList[index].widthMe) + lineLeft;
+      // console.log(events, lineTop, lineDown, lineLeft, lineRight);
+      // console.log(
+      //   events.pageX - this.rightLineX >= lineLeft,
+      //   events.pageX - this.rightLineX <= lineRight,
+      //   events.y - 40 >= lineTop,
+      //   events.y - 40 <= lineDown
+      // );
+      if (
+        events.pageX - this.rightLineX >= lineLeft &&
+        events.pageX - this.rightLineX <= lineRight &&
+        events.y - 40 >= lineTop &&
+        events.y - 40 <= lineDown
+      ) {
+        this.lineMouseover(dom, events, id, parentId, index);
+        this.lineMouseenter(dom, events, id, parentId, index);
+      } else {
+        this.isShowMsg = false;
+        this.currentLineDay = {
+          start: 0,
+          end: 0
+        };
+      }
+    },
     /**
      * @param  {String} dom ref
      * @param  {Object} e $event
@@ -1005,7 +1065,7 @@ export default {
      */
     //鼠标悬停展示上部日期
     lineMouseover(dom, e, id, parentId, index) {
-      // console.log(this.$refs[dom]);
+      // console.log(e);
       let start =
         Math.round(
           parseInt(this.$refs[dom][0].style.left) / this.currentDaySize.value
@@ -1138,7 +1198,7 @@ export default {
           this.currentDaySize.value;
         this.computedList[index].left = left;
         line.style.left = left + "px";
-        this.checkIsin(dom, e, id, parentId, index);
+        this.checkIsin(dom, events, id, parentId, index);
         if (parentId) {
           this.list.forEach(item => {
             if (item.id == parentId) {
@@ -1149,6 +1209,7 @@ export default {
               });
             }
           });
+          this.setGroupWidth(parentId);
         } else {
           this.list.forEach((item, index) => {
             if (item.id == id) {
@@ -1275,113 +1336,7 @@ export default {
           break;
       }
     },
-    //加入鼠标滚轮事件
-    addMousewheel() {
-      let z = 0;
-      window.onmousewheel = e => {
-        if (e.wheelDelta > 0) {
-          z = window.scrollX;
-          z = z - 40;
-          window.scrollTo(z, 0);
-        }
-        if (e.wheelDelta < 0) {
-          z = z + 40;
-          window.scrollTo(z, 0);
-        }
-      };
-    },
-    setList() {
-      // this.list = [
-      //   {
-      //     per: 40,
-      //     startTime: new Date("2018/01/15").getTime(),
-      //     endTime: new Date("2018/01/25").getTime(),
-      //     left:
-      //       (Math.floor(
-      //         new Date("2018/01/15").getTime() -
-      //           new Date("2018/01/01").getTime()
-      //       ) /
-      //         (1000 * 60 * 60 * 24)) *
-      //       this.currentDaySize.value,
-      //     widthMe:
-      //       (Math.floor(
-      //         new Date("2018/01/25").getTime() -
-      //           new Date("2018/01/15").getTime()
-      //       ) /
-      //         (1000 * 60 * 60 * 24)) *
-      //         this.currentDaySize.value +
-      //       this.currentDaySize.value,
-      //     widthChild:
-      //       (Math.floor(
-      //         new Date("2018/01/25").getTime() -
-      //           new Date("2018/01/15").getTime()
-      //       ) /
-      //         (1000 * 60 * 60 * 24)) *
-      //         this.currentDaySize.value +
-      //       this.currentDaySize.value,
-      //     name: "测试1",
-      //     ower: "曹梦哲",
-      //     type: "1"
-      //   },
-      //   {
-      //     name: "测试2",
-      //     ower: "曹梦哲",
-      //     type: "1",
-      //     per: 55,
-      //     startTime: new Date("2018/12/20").getTime(),
-      //     endTime: new Date("2019/1/3").getTime(),
-      //     left:
-      //       (Math.floor(
-      //         new Date("2018/12/20").getTime() -
-      //           new Date("2018/01/01").getTime()
-      //       ) /
-      //         (1000 * 60 * 60 * 24)) *
-      //       this.currentDaySize.value,
-      //     widthMe:
-      //       (Math.floor(
-      //         new Date("2019/1/3").getTime() - new Date("2018/12/20").getTime()
-      //       ) /
-      //         (1000 * 60 * 60 * 24)) *
-      //         this.currentDaySize.value +
-      //       this.currentDaySize.value,
-      //     widthChild:
-      //       (Math.floor(
-      //         new Date("2019/1/3").getTime() - new Date("2018/12/20").getTime()
-      //       ) /
-      //         (1000 * 60 * 60 * 24)) *
-      //         this.currentDaySize.value +
-      //       this.currentDaySize.value
-      //   },
-      //   {
-      //     children: [
-      //       {
-      //         endTime: 1569168000000,
-      //         id: 1566892053776,
-      //         left: 24120,
-      //         name: "zzzzzzz",
-      //         ower: "",
-      //         parentId: 1566892046489,
-      //         per: 0,
-      //         startTime: 1566835200000,
-      //         stoneTime: "",
-      //         type: "1",
-      //         widthChild: 1120,
-      //         widthMe: 1120
-      //       }
-      //     ],
-      //     endTime: "",
-      //     id: 1566892046489,
-      //     name: "asdasdasd",
-      //     ower: "",
-      //     per: 0,
-      //     planTime: [],
-      //     startTime: "",
-      //     stoneTime: "",
-      //     type: "3",
-      //     expand: true
-      //   }
-      // ];
-    },
+    setList() {},
     //设置里程碑线的高度
     setStoneLine() {
       this.$nextTick(() => {
@@ -1414,26 +1369,6 @@ export default {
         item.widthChild = (item.widthChild / oldValue.value) * newValue.value;
       });
     }
-    // list: {
-    //   handler: function(val) {
-    //     let arr = [];
-    //     val.forEach((item, index) => {
-    //       if (!item.children || item.children.length < 1) {
-    //         arr.push(item);
-    //       } else if (item.children && item.children.length >= 1) {
-    //         arr.push(item);
-    //         arr = arr.concat(item.children);
-    //         // console.log(item.children);
-    //         console.log(arr);
-    //       }
-    //     });
-    //     arr.forEach(item => {
-    //       item.isShow = true;
-    //     });
-    //     this.computedList = arr;
-    //   },
-    //   deep: true
-    // }
   },
   mounted() {
     document.addEventListener("scroll", this.handleScroll);

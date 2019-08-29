@@ -199,7 +199,9 @@ export default {
       this.currentRow = {};
     },
     handlerRowClick(row) {
-      this.$emit("handlerRowClick", row);
+      if (row.type != 3) {
+        this.$emit("handlerRowClick", row);
+      }
     },
     handleRowMore(row, e) {
       // console.log(row, e);

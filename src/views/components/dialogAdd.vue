@@ -185,7 +185,7 @@ export default {
           return false;
         }
       });
-      this.$refs.form.resetFields();
+
       // this.form.type = "1";
     },
     onCancle() {

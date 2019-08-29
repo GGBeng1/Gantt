@@ -28,6 +28,11 @@ export default {
       isMove: false //当前是否拖拽tip
     };
   },
+  watch: {
+    value(newValue, oldValue) {
+      this.per = newValue;
+    }
+  },
   methods: {
     thunkMousedown(e) {
       let _this = this;
