@@ -10,6 +10,7 @@
     <div class="left" :style="{ width: rightLineX + 'px' }">
       <leftMenu
         :list="list"
+        ref="leftMenu"
         @handlerRowClick="handlerRowClick"
         @milestone="handlerMilestone"
         @planProject="handlerPlanProject"
@@ -429,6 +430,9 @@ export default {
     }
   },
   methods: {
+    handlerSelect(row) {
+      this.$refs.leftMenu.handlerSelect(row);
+    },
     //分组是否展开
     handlerExpand(row, expand) {
       let rowIndex = this.list.findIndex(item => {
@@ -744,10 +748,12 @@ export default {
       });
       if (parentId) {
         let index = this.list.findIndex(k => {
-          return (k.id = parentId);
+          return k.id == parentId;
         });
+        // console.log(parentId);
         this.list.forEach(item => {
           if (item.id == parentId) {
+            // console.log(item, this.list);
             item.children.forEach(k => {
               if (k.id == id) {
                 k.per = per;
@@ -1082,6 +1088,7 @@ export default {
         end
       };
       this.isHover = true;
+      this.handlerSelect(this.computedList[index]);
     },
     /**
      * @param  {String} dom ref
@@ -1132,6 +1139,7 @@ export default {
           left: 0,
           top: 0
         };
+        // this.handlerSelect();
         return;
       }
       this.currentLineDay = {
@@ -1149,6 +1157,7 @@ export default {
         left: 0,
         top: 0
       };
+      this.handlerSelect();
     },
     //每一行拖拽
     /**
