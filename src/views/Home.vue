@@ -323,6 +323,7 @@
         :dialogVal.sync="dialogVal"
         :isChildren="isChildren"
         @submit="handleSave"
+        @onCancle="onCancle"
         ref="dialogAdd"
       ></dialogAdd>
     </el-dialog>
@@ -447,7 +448,7 @@ export default {
           k.isShow = expand;
         });
       }
-      this.resetTop(rowIndex, !expand);
+      this.resetTop(rowIndex, !expand, true);
     },
     //分组添加子集
     handleGroupAdd(row) {
@@ -471,6 +472,10 @@ export default {
       this.isChildren = false;
       this.$refs.dialogAdd.resetFields();
       done();
+    },
+    onCancle() {
+      this.currentListIndex = "";
+      this.isChildren = false;
     },
     //新建保存
     async handleSave(val, isChildren) {
@@ -552,19 +557,32 @@ export default {
       this.isChildren = false;
       this.$refs.dialogAdd.resetFields();
     },
-    resetTop(zindex, reduce) {
-      console.log(zindex);
+    resetTop(zindex, reduce, isexpand) {
+      // console.log(zindex);
       let num = reduce ? -40 : 40;
-      this.list.forEach((item, index) => {
-        if (index > zindex) {
-          item.top = item.top + num;
-          if (item.children && item.children.length > 0) {
-            item.children.forEach(k => {
-              k.top = k.top + num;
-            });
+      if (!reduce && !isexpand) {
+        this.list.forEach((item, index) => {
+          if (index > zindex) {
+            item.top = item.top + 40;
+            if (item.children && item.children.length > 0) {
+              item.children.forEach((k, i) => {
+                k.top = item.top + 40 * i + 40;
+              });
+            }
           }
-        }
-      });
+        });
+      } else {
+        this.list.forEach((item, index) => {
+          if (index > zindex) {
+            item.top = item.top + num * this.list[zindex].children.length;
+            if (item.children && item.children.length > 0) {
+              item.children.forEach((k, i) => {
+                k.top = item.top + 40 * i + 40;
+              });
+            }
+          }
+        });
+      }
     },
     //根据id设置group的宽度
     setGroupWidth(id) {
@@ -665,6 +683,7 @@ export default {
             cl.widthMe = cl.widthChild = this.currentDaySize.value;
           }
         });
+        this.setGroupPer(row.parentId);
         this.$set(this.list, cindex, this.list[cindex]);
       }
     },
@@ -697,6 +716,7 @@ export default {
         cl.left = row.left + row.widthMe - this.currentDaySize.value;
         cl.widthMe = this.currentDaySize.value;
         cl.widthChild = this.currentDaySize.value;
+        this.setGroupPer(row.parentId);
         this.$set(this.list, cindex, cur);
         this.setStoneLine();
       }

@@ -192,6 +192,7 @@ export default {
       this.$emit("update:dialogVal", false);
       this.$refs.form.resetFields();
       this.form.type = "1";
+      this.$emit("onCancle");
     },
     resetFields() {
       this.$refs.form.resetFields();
