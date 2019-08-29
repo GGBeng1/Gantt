@@ -58,7 +58,7 @@
       </el-form-item>
 
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">立即创建</el-button>
+        <el-button type="primary" @click="onSubmit">保存</el-button>
         <el-button @click="onCancle">取消</el-button>
       </el-form-item>
     </el-form>
@@ -70,7 +70,8 @@ export default {
   props: {
     dialogVal: Boolean,
     owerOptions: Array,
-    isChildren: Boolean
+    isChildren: Boolean,
+    title: String
   },
   data() {
     return {
@@ -176,10 +177,14 @@ export default {
       this.$refs.form.validate(valid => {
         if (valid) {
           this.$emit("update:dialogVal", false);
-          if (this.isChildren) {
-            this.$emit("submit", this.form, true);
-          } else {
-            this.$emit("submit", this.form);
+          if (this.title == "新建") {
+            if (this.isChildren) {
+              this.$emit("submit", this.form, true);
+            } else {
+              this.$emit("submit", this.form);
+            }
+          } else if (this.title == "编辑") {
+            this.$emit("handleEditSave", this.form);
           }
         } else {
           return false;

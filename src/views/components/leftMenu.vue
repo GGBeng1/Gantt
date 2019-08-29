@@ -182,7 +182,6 @@ export default {
   },
   methods: {
     handlerSelect(row) {
-      // console.log(row);
       this.$refs.tableMenu.setCurrentRow(row);
     },
     handlerExpand(row, expand) {
@@ -211,8 +210,6 @@ export default {
       }
     },
     handleRowMore(row, e) {
-      // console.log(row, e);
-      // this.menuLists[1] = this.projectType[row.type];
       this.menuLists = ["编辑", "里程碑", "分组", "删除"];
       if (row.parentId) {
         this.menuLists = ["编辑", "里程碑", "删除"];
@@ -282,7 +279,6 @@ export default {
           })
           .catch(() => {});
       }
-      // this.currentRow = {};
     }
   }
 };
