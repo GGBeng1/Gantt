@@ -239,7 +239,9 @@ export default {
           type: "warning",
           center: true
         })
-          .then(() => {})
+          .then(() => {
+            this.$emit("handlerDel", this.currentRow);
+          })
           .catch(() => {});
       } else if (index == 1) {
         if (this.currentRow.type == 3) {
@@ -264,8 +266,31 @@ export default {
       } else if (index == 0) {
         this.$emit("handlerEdit", this.currentRow);
       } else if (index == 2) {
-        if (this.currentRow.type == 3 || name == "删除") {
-          console.log("删除分组");
+        console.log(name);
+        if (this.currentRow.type == 3 && name == "删除分组") {
+          this.$confirm("此操作将永久删除该分组及其子项目, 是否继续?", "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+            center: true
+          })
+            .then(() => {
+              this.$emit("handlerDel", this.currentRow);
+            })
+            .catch(() => {});
+          return;
+        }
+        if (name == "删除") {
+          this.$confirm("此操作将永久删除该项目, 是否继续?", "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+            center: true
+          })
+            .then(() => {
+              this.$emit("handlerDel", this.currentRow);
+            })
+            .catch(() => {});
           return;
         }
         this.$confirm(`确定转为分组？`, "提示", {

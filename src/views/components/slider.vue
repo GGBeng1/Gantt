@@ -30,18 +30,17 @@ export default {
   },
   methods: {
     thunkMousedown(e) {
-      let _this = this;
-      let width = parseInt(_this.width);
+      let width = parseInt(this.width);
       let disX = e.clientX;
       this.$emit("thunkMousedown");
       this.isMove = true;
-      document.onmousemove = function(e) {
+      document.onmousemove = e => {
         let newWidth = e.clientX - disX + width;
-        let scale = newWidth / _this.slider.offsetWidth;
-        _this.per = Math.ceil((_this.max - _this.min) * scale + _this.min);
-        _this.per = Math.max(_this.per, _this.min);
-        _this.per = Math.min(_this.per, _this.max);
-        _this.$emit("thunkMousemove", e, this.index);
+        let scale = newWidth / this.slider.offsetWidth;
+        this.per = Math.ceil((this.max - this.min) * scale + this.min);
+        this.per = Math.max(this.per, this.min);
+        this.per = Math.min(this.per, this.max);
+        this.$emit("thunkMousemove", e, this.index);
       };
       document.onmouseup = event => {
         this.isMove = false;
