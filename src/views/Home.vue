@@ -18,6 +18,7 @@
         @handlerEdit="handlerEdit"
         @handleGroupAdd="handleGroupAdd"
         @handlerExpand="handlerExpand"
+        @handlerDel="handlerDel"
       ></leftMenu>
       <div class="rightLine" :style="{ left: rightLineX + 'px' }"></div>
       <div
@@ -505,6 +506,47 @@ export default {
       }
       this.dialogVal = true;
     },
+    //删除
+    handlerDel(row) {
+      if (!row.parentId) {
+        let index = this.list.findIndex(item => {
+          return item.id == row.id;
+        });
+        this.list.splice(index, 1);
+        if (row.type == 3) {
+          // console.log(row, row.children.length);
+          if (!row.expand) {
+            this.retDelTop(index, 1);
+          } else {
+            this.retDelTop(index, row.children.length + 1);
+          }
+        } else {
+          this.retDelTop(index, 1);
+        }
+      } else {
+        let parent = this.list.find(item => {
+          return item.id == row.parentId;
+        });
+        let parentIndex = this.list.findIndex(item => {
+          return item.id == row.parentId;
+        });
+        let cindex = parent.children.findIndex(k => {
+          return k.id == row.id;
+        });
+        parent.children.splice(cindex, 1);
+        if (parent.children[cindex]) {
+          parent.children.forEach((o, i) => {
+            if (i >= cindex) {
+              o.top = o.top - 40;
+            }
+          });
+        }
+        this.setGroupWidth(row.parentId);
+        this.setGroupPer(row.parentId);
+        this.resetTop(parentIndex, true);
+        this.$set(this.list, parentIndex, parent);
+      }
+    },
     //dialog beforClose
     hanleClose(done) {
       this.currentListIndex = "";
@@ -682,6 +724,18 @@ export default {
           }
         });
       }
+    },
+    retDelTop(zindex, length) {
+      this.list.forEach((item, index) => {
+        if (index >= zindex) {
+          item.top = item.top - 40 * length;
+          if (item.children && item.children.length > 0) {
+            item.children.forEach((k, i) => {
+              k.top = item.top + 40 * i + 40;
+            });
+          }
+        }
+      });
     },
     //根据id设置group的宽度
     setGroupWidth(id) {
