@@ -13,11 +13,6 @@
   </div>
 </template>
 <script>
-/*
- * min 进度条最小值
- * max 进度条最大值
- * v-model 对当前值进行双向绑定实时显示拖拽进度
- * */
 export default {
   props: ["min", "max", "value", "widths", "id", "parentId"],
   data() {
@@ -41,11 +36,7 @@ export default {
       this.$emit("thunkMousedown");
       this.isMove = true;
       document.onmousemove = function(e) {
-        // value, left, width
-        // 当value变化的时候，会通过计算属性修改left，width
-        // 拖拽的时候获取的新width
         let newWidth = e.clientX - disX + width;
-        // 拖拽的时候得到新的百分比
         let scale = newWidth / _this.slider.offsetWidth;
         _this.per = Math.ceil((_this.max - _this.min) * scale + _this.min);
         _this.per = Math.max(_this.per, _this.min);
@@ -72,9 +63,6 @@ export default {
     this.thunk = this.$refs.trunk;
   },
   computed: {
-    // 设置一个百分比，提供计算slider进度宽度和trunk的left值
-    // 对应公式为  当前值-最小值/最大值-最小值 = slider进度width / slider总width
-    // trunk left =  slider进度width + trunk宽度/2
     scale() {
       return (this.per - this.min) / (this.max - this.min);
     },

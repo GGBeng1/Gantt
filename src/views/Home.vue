@@ -1483,8 +1483,15 @@ export default {
     currentDaySize(newValue, oldValue) {
       this.list.forEach(item => {
         item.left = (item.left / oldValue.value) * newValue.value;
-        item.widthMe = (item.widthMe / oldValue.value) * newValue.value;
-        item.widthChild = (item.widthChild / oldValue.value) * newValue.value;
+        item.widthMe = item.widthChild =
+          (item.widthMe / oldValue.value) * newValue.value;
+        if (item.children && item.children.length > 0) {
+          item.children.forEach(k => {
+            k.left = (k.left / oldValue.value) * newValue.value;
+            k.widthMe = k.widthChild =
+              (k.widthMe / oldValue.value) * newValue.value;
+          });
+        }
       });
     }
   },
