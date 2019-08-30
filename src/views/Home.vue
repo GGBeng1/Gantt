@@ -682,6 +682,9 @@ export default {
         obj.top = 40 + cindex * 40 + s.top;
         obj.parentId = s.id;
         s.children.push(obj);
+        s.children.forEach(item => {
+          item.isShow = true;
+        });
         // console.log(s);
         this.setGroupWidth(s.id);
         this.setGroupPer(s.id);
@@ -739,7 +742,6 @@ export default {
       let parent = this.list.find(item => {
         return item.id == id;
       });
-      // console.log(parent, 111111111111111111);
       let left = Math.min.apply(
         Math,
         parent.children.map(o => {
