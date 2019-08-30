@@ -469,7 +469,6 @@ export default {
     },
     //编辑
     handlerEdit(row) {
-      // console.log(row);
       this.title = "编辑";
       let obj = {};
       if (row.parentId) {
@@ -481,7 +480,6 @@ export default {
         let cur = parent.children.find(item => {
           return item.id == row.id;
         });
-        // console.log(obj);
         let { name, ower, type, planTime, stoneTime } = cur;
         obj = { name, ower, type, planTime, stoneTime };
         obj.planTime[0] = this.computedWithTime(cur.left, true);
@@ -514,7 +512,6 @@ export default {
         });
         this.list.splice(index, 1);
         if (row.type == 3) {
-          // console.log(row, row.children.length);
           if (!row.expand) {
             this.retDelTop(index, 1);
           } else {
