@@ -519,27 +519,61 @@ export default {
       this.editRow = [];
     },
     handleEditSave(row) {
-      // console.log(row);
-      // if (this.editRow.length == 1) {
-      //   let cur = this.list.find(item => {
-      //     return item.id == this.editRow[0];
-      //   });
-      //   cur = Object.assign(cur, row);
-      //   cur.planTime = row.planTime;
-      //   cur.startTime =
-      //     row.planTime.length > 0 ? row.planTime[0] : row.stoneTime;
-      //   cur.endTime = row.planTime.length > 0 ? row.planTime[1] : row.stoneTime;
-      // } else if (this.editRow.length == 2) {
-      //   let parent = this.list.find(item => {
-      //     return item.id == this.editRow[0];
-      //   });
-      //   let cur = parent.children.find(item => {
-      //     return item.id == this.editRow[1];
-      //   });
-      //   cur = Object.assign(cur, row);
-      //   cur.planTime = row.planTime;
-      // }
-      // this.editRow = [];
+      console.log(row);
+      if (this.editRow.length == 1) {
+        let cur = this.list.find(item => {
+          return item.id == this.editRow[0];
+        });
+        cur = Object.assign(cur, row);
+        cur.planTime = row.planTime;
+        if (cur.type != 3) {
+          cur.startTime =
+            row.planTime.length > 0 ? row.planTime[0] : row.stoneTime;
+          cur.endTime =
+            row.planTime.length > 0 ? row.planTime[1] : row.stoneTime;
+          cur.left = this.computedTimeWidth(cur.startTime);
+          cur.widthChild = cur.widthMe = this.computedTimeWidth(
+            cur.startTime,
+            cur.endTime
+          );
+        }
+      } else if (this.editRow.length == 2) {
+        let parent = this.list.find(item => {
+          return item.id == this.editRow[0];
+        });
+        let cur = parent.children.find(item => {
+          return item.id == this.editRow[1];
+        });
+        cur = Object.assign(cur, row);
+        cur.planTime = row.planTime;
+        cur.startTime =
+          row.planTime.length > 0 ? row.planTime[0] : row.stoneTime;
+        cur.endTime = row.planTime.length > 0 ? row.planTime[1] : row.stoneTime;
+        cur.left = this.computedTimeWidth(cur.startTime);
+        cur.widthChild = cur.widthMe = this.computedTimeWidth(
+          cur.startTime,
+          cur.endTime
+        );
+        this.setGroupWidth(this.editRow[0]);
+      }
+      this.editRow = [];
+    },
+    computedTimeWidth(startTime, endTime) {
+      let left =
+        (Math.floor(
+          startTime - new Date(`${this.currentYear - 1}/01/01`).getTime()
+        ) /
+          (1000 * 60 * 60 * 24)) *
+        this.currentDaySize.value;
+      let width =
+        (Math.floor(endTime - startTime) / (1000 * 60 * 60 * 24)) *
+          this.currentDaySize.value +
+        this.currentDaySize.value;
+      if (!endTime) {
+        return left;
+      } else {
+        return width;
+      }
     },
     //新建保存
     async handleSave(val, isChildren) {
@@ -551,16 +585,12 @@ export default {
       obj.endTime = obj.planTime.length > 0 ? obj.planTime[1] : obj.stoneTime;
 
       if (obj.type != 3) {
-        obj.left =
-          (Math.floor(
-            obj.startTime - new Date(`${this.currentYear - 1}/01/01`).getTime()
-          ) /
-            (1000 * 60 * 60 * 24)) *
-          this.currentDaySize.value;
-        obj.widthMe = obj.widthChild =
-          (Math.floor(obj.endTime - obj.startTime) / (1000 * 60 * 60 * 24)) *
-            this.currentDaySize.value +
-          this.currentDaySize.value;
+        obj.left = this.computedTimeWidth(obj.startTime);
+        obj.widthMe = obj.widthChild = this.computedTimeWidth(
+          obj.startTime,
+          obj.endTime
+        );
+
         if (index == 0) {
           obj.top = 52;
         } else {
@@ -713,6 +743,8 @@ export default {
       this.list[index].type = "3";
       this.list[index].per = 0;
       this.list[index].id = new Date().getTime();
+      this.list[index].left = 0;
+      this.list[index].widthMe = this.list[index].widthChild = 0;
       this.$set(this.list, index, this.list[index]);
     },
     //里程碑去掉mouseenter显示

@@ -44,7 +44,7 @@
         >
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="类型" prop="type">
+      <el-form-item label="类型" prop="type" v-if="title == '新建'">
         <el-select v-model="form.type" style="width:100%">
           <el-option
             v-for="item in typeOptions"
