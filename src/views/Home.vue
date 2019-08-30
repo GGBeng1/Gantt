@@ -611,6 +611,7 @@ export default {
         }
       }
       if (obj.type == 2) {
+        obj.per = 100;
         this.setStoneLine();
       }
       if (obj.type == 3) {
