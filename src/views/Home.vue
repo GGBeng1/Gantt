@@ -435,6 +435,7 @@ export default {
     }
   },
   methods: {
+    //设置左侧leftmenu高亮
     handlerSelect(row) {
       this.$refs.leftMenu.handlerSelect(row);
     },
@@ -462,7 +463,6 @@ export default {
       this.currentListIndex = this.list.findIndex(item => {
         return item.id == row.id;
       });
-      // console.log(index);
       this.dialogVal = true;
       this.isChildren = true;
     },
@@ -505,7 +505,7 @@ export default {
       }
       this.dialogVal = true;
     },
-    //beforClose
+    //dialog beforClose
     hanleClose(done) {
       this.currentListIndex = "";
       this.isChildren = false;
@@ -513,11 +513,13 @@ export default {
       this.$refs.dialogAdd.resetFields();
       done();
     },
+    //dialog 取消
     onCancle() {
       this.currentListIndex = "";
       this.isChildren = false;
       this.editRow = [];
     },
+    //编辑保存
     handleEditSave(row) {
       console.log(row);
       if (this.editRow.length == 1) {
@@ -558,6 +560,7 @@ export default {
       }
       this.editRow = [];
     },
+    // 根据时间计算距离
     computedTimeWidth(startTime, endTime) {
       let left =
         (Math.floor(
@@ -651,6 +654,7 @@ export default {
       this.isChildren = false;
       this.$refs.dialogAdd.resetFields();
     },
+    //修改后续高度
     resetTop(zindex, reduce, isexpand) {
       // console.log(zindex);
       let num = reduce ? -40 : 40;
@@ -699,33 +703,6 @@ export default {
       parent.widthMe = parent.widthChild = widthMe;
       parent.left = left;
       // return parent;
-    },
-    setComputedListGroupWidth(id) {
-      if (!id) return;
-      let parent = this.computedList.find(item => {
-        return item.id == id;
-      });
-      let arr = [];
-      this.computedList.forEach(item => {
-        if (item.parentId == id) {
-          arr.push(item);
-        }
-      });
-      console.log(parent, arr);
-      let left = Math.max.apply(
-        Math,
-        arr.map(o => {
-          return o.left;
-        })
-      );
-      let widthMe = Math.min.apply(
-        Math,
-        arr.map(o => {
-          return o.widthMe;
-        })
-      );
-      parent.widthMe = parent.widthChild = widthMe;
-      parent.left = left;
     },
     //新建项目
     handlerAddGantt() {
@@ -886,18 +863,15 @@ export default {
           }
         });
       }
-      // console.log(this.list);
-      // this.list[index].per = per;
-      // this.list
       this.checkIsin(`line${id}`, e, id, parentId, cindex);
     },
+    //设置分组百分比
     setGroupPer(id) {
       let z = this.list.find(o => {
         return o.id == id;
       });
       let count = 0;
       let length = z.children.length;
-      // console.log(111111111111111111111111, z, length);
       z.children.forEach(item => {
         count = count + (item.per / 100) * (1 / length);
       });
@@ -924,6 +898,8 @@ export default {
     /**
      * @param  {String} dom ref
      * @param  {Object} e $event
+     * @param  {Number} id id
+     * @param  {Number} parentId parentId
      * @param  {Number} index index
      */
     leftCurDragMounsedown(dom, e, id, parentId, index) {
@@ -1035,6 +1011,8 @@ export default {
     /**
      * @param  {String} dom ref
      * @param  {Object} e $event
+     * @param  {Number} id id
+     * @param  {Number} parentId parentId
      * @param  {Number} index index
      */
     rightCurDragMounsedown(dom, e, id, parentId, index) {
@@ -1151,6 +1129,13 @@ export default {
       }
     },
     //根据index值和e判断是否在当前line的范围里，是否展示时间和msg框
+    /**
+     * @param  {String} dom ref
+     * @param  {Object} events $event
+     * @param  {Number} id id
+     * @param  {Number} parentId parentId
+     * @param  {Number} index index
+     */
     checkIsin(dom, events, id, parentId, index) {
       let line = this.$refs[dom][0];
       let lineTop = parseInt(line.style.top);
@@ -1182,7 +1167,9 @@ export default {
     },
     /**
      * @param  {String} dom ref
-     * @param  {Object} e $event
+     * @param  {Object} events $event
+     * @param  {Number} id id
+     * @param  {Number} parentId parentId
      * @param  {Number} index index
      */
     //鼠标悬停展示上部日期
@@ -1208,7 +1195,9 @@ export default {
     },
     /**
      * @param  {String} dom ref
-     * @param  {Object} e $event
+     * @param  {Object} events $event
+     * @param  {Number} id id
+     * @param  {Number} parentId parentId
      * @param  {Number} index index
      */
     //鼠标进入显示当前项目的基本信息框
@@ -1278,7 +1267,9 @@ export default {
     //每一行拖拽
     /**
      * @param  {String} dom ref
-     * @param  {Object} e $event
+     * @param  {Object} events $event
+     * @param  {Number} id id
+     * @param  {Number} parentId parentId
      * @param  {Number} index index
      */
     lineMousedown(dom, e, id, parentId, index) {
@@ -1475,6 +1466,7 @@ export default {
         });
       });
     },
+    //顶部固定时间
     handleScroll() {
       let w = window.scrollX;
       if (w <= 62) {
