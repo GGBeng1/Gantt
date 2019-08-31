@@ -844,6 +844,7 @@ export default {
         cl.widthMe = this.currentDaySize.value;
         cl.widthChild = this.currentDaySize.value;
         this.setGroupPer(row.parentId);
+        this.setGroupWidth(row.parentId);
         this.$set(this.list, cindex, cur);
         this.setStoneLine();
       }
