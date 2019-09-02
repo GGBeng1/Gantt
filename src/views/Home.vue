@@ -1197,13 +1197,6 @@ export default {
       let lineDown = lineTop + 16;
       let lineLeft = parseInt(line.style.left);
       let lineRight = parseInt(this.computedList[index].widthMe) + lineLeft;
-      // console.log(events, lineTop, lineDown, lineLeft, lineRight);
-      // console.log(
-      //   events.pageX - this.rightLineX >= lineLeft,
-      //   events.pageX - this.rightLineX <= lineRight,
-      //   events.y - 40 >= lineTop,
-      //   events.y - 40 <= lineDown
-      // );
       if (
         events.pageX - this.rightLineX >= lineLeft &&
         events.pageX - this.rightLineX <= lineRight &&
