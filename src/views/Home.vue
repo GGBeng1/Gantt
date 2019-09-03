@@ -879,6 +879,7 @@ export default {
       this.days.forEach((item, index) => {
         item.width = (index + 1) * this.currentDaySize.value;
       });
+      this.handleScroll()
     },
     //滑动进度条事件
     thunkMousemove(e, index) {
