@@ -17,10 +17,14 @@ export default {
   props: ["min", "max", "value", "widths", "id", "parentId"],
   data() {
     return {
-      slider: null, //滚动条DOM元素
-      thunk: null, //拖拽DOM元素
-      per: this.value, //当前值
-      isMove: false //当前是否拖拽tip
+      //滚动条DOM元素
+      slider: null,
+      //拖拽DOM元素
+      thunk: null,
+      //当前值
+      per: this.value,
+      //当前是否拖拽tip
+      isMove: false
     };
   },
   watch: {
