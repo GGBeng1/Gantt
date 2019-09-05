@@ -403,7 +403,8 @@ export default {
       showFixdTopMonth: false,
       currentListIndex: "",
       //正在编辑的row
-      editRow: []
+      editRow: [],
+      currentRow: null
     };
   },
   computed: {
@@ -696,6 +697,7 @@ export default {
       this.currentListIndex = "";
       this.isChildren = false;
       this.$refs.dialogAdd.resetFields();
+      this.handlerRowClick(obj);
     },
     //修改后续高度
     resetTop(zindex, reduce, isexpand) {
@@ -869,7 +871,8 @@ export default {
     },
     //rowClick事件
     handlerRowClick(row) {
-      console.log(row);
+      // console.log(row);
+      this.currentRow = row;
       window.scrollTo(row.left - 100, 0);
     },
     //更改daySize
@@ -879,7 +882,15 @@ export default {
       this.days.forEach((item, index) => {
         item.width = (index + 1) * this.currentDaySize.value;
       });
-      this.handleScroll()
+      this.handleScroll();
+      if (this.currentRow) {
+        let rs = this.computedList.find(o => {
+          return o.id == this.currentRow.id;
+        });
+        this.$nextTick(() => {
+          window.scrollTo(rs.left - 100, 0);
+        });
+      }
     },
     //滑动进度条事件
     thunkMousemove(e, index) {

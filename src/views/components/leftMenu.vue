@@ -204,7 +204,7 @@ export default {
       this.currentRow = {};
     },
     handlerRowClick(row, column) {
-      console.log(column);
+      // console.log(column);
       if (row.type != 3) {
         this.$emit("handlerRowClick", row);
       }
