@@ -1024,8 +1024,7 @@ export default {
         }
         line.style.width = result + "px";
         line.style.left = result1 + "px";
-        // this.computedList[index].widthChild = result;
-        // this.setComputedListGroupWidth(parentId);
+        this.computedList[index].widthChild = result;
         this.lineMouseover(dom, e, id, parentId, index);
         this.lineMouseleave(e, true);
       };
