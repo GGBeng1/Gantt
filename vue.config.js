@@ -7,5 +7,6 @@ module.exports = {
   },
   assetsDir: 'static',
   outputDir: 'docs',
-  publicPath: './'
+  publicPath: './',
+  productionSourceMap: process.env.NODE_ENV === 'production' ? false : true
 };
