@@ -538,7 +538,7 @@ export default {
       });
       // console.log(l);
       this.list = l;
-      this.setStoneLine();
+      this.setStoneLine(1);
       window.scrollTo(this.list[0].left - 100, 0);
     },
     //设置左侧leftmenu高亮
@@ -1631,13 +1631,13 @@ export default {
     },
     setList() {},
     //设置里程碑线的高度
-    setStoneLine() {
+    setStoneLine(isFirst) {
       this.$nextTick(() => {
         let arr = Array.from(document.getElementsByClassName("stoneLine"));
         let height = window.getComputedStyle(
           document.getElementsByClassName("today")[0]
         ).height;
-        height = parseFloat(height) - 16.8;
+        height = isFirst ? parseFloat(height) : parseFloat(height) - 16.8;
         arr.forEach(e => {
           e.style.height = height + "px";
         });
