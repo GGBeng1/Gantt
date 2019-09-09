@@ -1233,7 +1233,6 @@ export default {
      */
     //鼠标悬停展示上部日期
     lineMouseover(dom, e, id, parentId, index) {
-      // console.log(e);
       let start =
         Math.round(
           parseInt(this.$refs[dom][0].style.left) / this.currentDaySize.value
@@ -1251,6 +1250,7 @@ export default {
       };
       this.isHover = true;
       this.handlerSelect(this.computedList[index]);
+      this.lineMouseenter(dom, e, id, parentId, index);
     },
     /**
      * @param  {String} dom ref
