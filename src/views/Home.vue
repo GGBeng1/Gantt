@@ -5,6 +5,12 @@
         <el-button type="primary" size="mini" @click="handlerAddGantt"
           >新建</el-button
         >
+        <el-button type="primary" size="mini" @click="handlerSaveData"
+          >保存</el-button
+        >
+        <el-button type="primary" size="mini" @click="handlerCheckList"
+          >批量添加数据</el-button
+        >
       </div>
     </div>
     <div class="left" :style="{ width: rightLineX + 'px' }">
@@ -437,6 +443,104 @@ export default {
     }
   },
   methods: {
+    //保存当前的所有数据
+    handlerSaveData() {
+      console.log(this.list);
+      // this.handlerCheckList();
+    },
+    //过滤导入的数据
+    handlerCheckList() {
+      let l = [
+        {
+          name: "1",
+          ower: "",
+          type: "3",
+          per: 0,
+          startTime: "",
+          endTime: "",
+          id: 1568028397666,
+          children: [
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 1568028403474,
+              parentId: 1568028397666
+            }
+          ]
+        },
+        {
+          name: "2",
+          ower: "",
+          type: "2",
+          stoneTime: 1567958400000,
+          per: 100,
+          startTime: 1567958400000,
+          endTime: 1567958400000,
+          id: 1568028411761
+        }
+      ];
+      l.forEach((item, index) => {
+        item.planTime = [];
+        item.left =
+          item.type == 3 ? "" : this.computedTimeWidth(item.startTime);
+        item.widthMe = item.widthChild =
+          item.type == 3
+            ? ""
+            : this.computedTimeWidth(item.startTime, item.endTime);
+        item.isShow = true;
+        if (index - 1 < 0) {
+          item.top = 52;
+          if (item.type == 3) {
+            item.isexpand = true;
+            if (item.children.length > 0) {
+              item.children.forEach((k, i) => {
+                k.top = item.top + i * 40 + 40;
+                k.isShow = true;
+                k.left = this.computedTimeWidth(k.startTime);
+                k.widthMe = k.widthChild = this.computedTimeWidth(
+                  k.startTime,
+                  k.endTime
+                );
+              });
+            }
+          }
+        } else {
+          if (l[index - 1].type == 3) {
+            item.top =
+              l[index - 1].top + l[index - 1].children.length * 40 + 40;
+            if (item.type == 3) {
+              item.isexpand = true;
+              if (item.children.length > 0) {
+                item.children.forEach((z, o) => {
+                  z.top = item.top + o * 40;
+                  z.isShow = true;
+                  z.left = this.computedTimeWidth(z.startTime);
+                  z.widthMe = z.widthChild = this.computedTimeWidth(
+                    z.startTime,
+                    z.endTime
+                  );
+                });
+              }
+            }
+          }
+        }
+      });
+      l.forEach(item => {
+        if (item.type == 3) {
+          this.setGroupWidth(item.id, l);
+          this.setGroupPer(item.id, l);
+        }
+      });
+      // console.log(l);
+      this.list = l;
+      this.setStoneLine();
+      window.scrollTo(this.list[0].left - 100, 0);
+    },
     //设置左侧leftmenu高亮
     handlerSelect(row) {
       this.$refs.leftMenu.handlerSelect(row);
@@ -740,10 +844,17 @@ export default {
       });
     },
     //根据id设置group的宽度
-    setGroupWidth(id) {
-      let parent = this.list.find(item => {
-        return item.id == id;
-      });
+    setGroupWidth(id, lists) {
+      let parent;
+      if (lists) {
+        parent = lists.find(item => {
+          return item.id == id;
+        });
+      } else {
+        parent = this.list.find(item => {
+          return item.id == id;
+        });
+      }
       let left = Math.min.apply(
         Math,
         parent.children.map(o => {
@@ -933,10 +1044,17 @@ export default {
       this.checkIsin(`line${id}`, e, id, parentId, cindex);
     },
     //设置分组百分比
-    setGroupPer(id) {
-      let z = this.list.find(o => {
-        return o.id == id;
-      });
+    setGroupPer(id, lists) {
+      let z;
+      if (lists) {
+        z = lists.find(o => {
+          return o.id == id;
+        });
+      } else {
+        z = this.list.find(o => {
+          return o.id == id;
+        });
+      }
       let count = 0;
       let length = z.children.length;
       z.children.forEach(item => {
