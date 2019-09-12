@@ -416,7 +416,7 @@ export default {
   computed: {
     computedList() {
       let arr = [];
-      this.list.forEach((item, index) => {
+      this.list.forEach((item) => {
         if (!item.children || item.children.length < 1) {
           arr.push(item);
         } else if (item.children && item.children.length >= 1) {
@@ -714,7 +714,7 @@ export default {
         this.currentDaySize.value;
       let width =
         (Math.floor(endTime - startTime) / (1000 * 60 * 60 * 24)) *
-          this.currentDaySize.value +
+        this.currentDaySize.value +
         this.currentDaySize.value;
       if (!endTime) {
         return left;
@@ -802,6 +802,7 @@ export default {
       this.isChildren = false;
       this.$refs.dialogAdd.resetFields();
       this.handlerRowClick(obj);
+      this.setStoneLine()
     },
     //修改后续高度
     resetTop(zindex, reduce, isexpand) {
@@ -971,7 +972,7 @@ export default {
         if (cx + result <= 441) return;
         this.$refs.rightLine.style.left = cx + result + "px";
       };
-      document.onmouseup = events => {
+      document.onmouseup = () => {
         document.onmousemove = document.onmouseup = null;
         if (cx + result <= 441) {
           this.rightLineX = 441;
@@ -1004,7 +1005,7 @@ export default {
       }
     },
     //滑动进度条事件
-    thunkMousemove(e, index) {
+    thunkMousemove() {
       this.isShowMsg = false;
     },
     //滑动进度条事件
@@ -1035,7 +1036,7 @@ export default {
         this.setGroupPer(parentId);
         this.$set(this.list, index, this.list[index]);
       } else {
-        this.list.forEach((item, index) => {
+        this.list.forEach((item) => {
           if (item.id == id) {
             item.per = per;
           }
@@ -1066,7 +1067,7 @@ export default {
     handleGoToday() {
       let s =
         Math.round(window.innerWidth / this.currentDaySize.value / 2) *
-          this.currentDaySize.value -
+        this.currentDaySize.value -
         this.rightLineX;
       let width =
         (Math.floor(
@@ -1075,7 +1076,7 @@ export default {
           ).getTime() - new Date(`${this.currentYear - 1}/01/01`).getTime()
         ) /
           (1000 * 60 * 60 * 24)) *
-          this.currentDaySize.value -
+        this.currentDaySize.value -
         s;
       window.scrollTo(width, 0);
     },
@@ -1096,7 +1097,6 @@ export default {
       let x = 0;
       let addwidth;
       let timers;
-      let wx = window.scrollX;
       document.onmousemove = event => {
         if (
           event.clientX <= this.rightLineX + 80 &&
@@ -1181,7 +1181,7 @@ export default {
           });
           this.setGroupWidth(parentId);
         } else {
-          this.list.forEach((item, index) => {
+          this.list.forEach((item) => {
             if (item.id == id) {
               item.widthMe = item.widthChild = result;
               item.left = result1;
@@ -1284,7 +1284,7 @@ export default {
           });
           this.setGroupWidth(parentId);
         } else {
-          this.list.forEach((item, index) => {
+          this.list.forEach((item) => {
             if (item.id == id) {
               item.widthMe = item.widthChild = result;
               // item.left = result1;
@@ -1355,7 +1355,7 @@ export default {
         Math.round(
           parseInt(this.$refs[dom][0].style.left) / this.currentDaySize.value
         ) *
-          this.currentDaySize.value +
+        this.currentDaySize.value +
         this.currentDaySize.value;
       let end =
         parseInt(this.$refs[dom][0].style.left) +
@@ -1388,7 +1388,7 @@ export default {
         parseInt(this.$refs[dom][0].style.width);
       end =
         Math.round(end / this.currentDaySize.value) *
-          this.currentDaySize.value -
+        this.currentDaySize.value -
         this.currentDaySize.value;
       this.currentProjectMsg = {
         name: this.computedList[index].name,
@@ -1451,7 +1451,6 @@ export default {
      */
     lineMousedown(dom, e, id, parentId, index) {
       let line = this.$refs[dom][0];
-      let cx = e.clientX;
       let cp = e.pageX;
       let result;
       let z = 0;
@@ -1504,7 +1503,7 @@ export default {
           });
           this.setGroupWidth(parentId);
         } else {
-          this.list.forEach((item, index) => {
+          this.list.forEach((item) => {
             if (item.id == id) {
               item.left = left;
             }
@@ -1616,20 +1615,23 @@ export default {
         case 10:
         case 12:
           return 31;
+          // eslint-disable-next-line no-unreachable
           break;
         case 4:
         case 6:
         case 9:
         case 11:
           return 30;
+          // eslint-disable-next-line no-unreachable
           break;
         case 2:
           day = days == 365 ? 28 : 29;
           return day;
+          // eslint-disable-next-line no-unreachable
           break;
       }
     },
-    setList() {},
+    setList() { },
     //设置里程碑线的高度
     setStoneLine(isFirst) {
       this.$nextTick(() => {
