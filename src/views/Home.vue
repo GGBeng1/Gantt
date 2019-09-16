@@ -499,6 +499,7 @@ export default {
             item.isexpand = true;
             if (item.children.length > 0) {
               item.children.forEach((k, i) => {
+                k.planTime = [];
                 k.top = item.top + i * 40 + 40;
                 k.isShow = true;
                 k.left = this.computedTimeWidth(k.startTime);
@@ -517,6 +518,7 @@ export default {
               item.isexpand = true;
               if (item.children.length > 0) {
                 item.children.forEach((z, o) => {
+                  z.planTime = [];
                   z.top = item.top + o * 40;
                   z.isShow = true;
                   z.left = this.computedTimeWidth(z.startTime);
@@ -536,7 +538,7 @@ export default {
           this.setGroupPer(item.id, l);
         }
       });
-      // console.log(l);
+      console.log(l);
       this.list = l;
       this.setStoneLine(1);
       window.scrollTo(this.list[0].left - 100, 0);
@@ -575,6 +577,7 @@ export default {
     //编辑
     handlerEdit(row) {
       this.title = "编辑";
+      this.dialogVal = true;
       let obj = {};
       if (row.parentId) {
         this.editRow[0] = row.parentId;
@@ -587,12 +590,18 @@ export default {
         });
         let { name, ower, type, planTime, stoneTime } = cur;
         obj = { name, ower, type, planTime, stoneTime };
+        if (type == 2) {
+          obj.stoneTime = this.computedWithTime(cur.left, true);
+        }
         obj.planTime[0] = this.computedWithTime(cur.left, true);
         obj.planTime[1] = this.computedWithTime(
           cur.left + cur.widthMe - this.currentDaySize.value,
           true
         );
-        this.$refs.dialogAdd.form = obj;
+        // console.log(obj);
+        this.$nextTick(() => {
+          this.$refs.dialogAdd.form = obj;
+        })
       } else {
         this.editRow[0] = row.id;
         let cur = this.list.find(item => {
@@ -600,14 +609,18 @@ export default {
         });
         let { name, ower, type, planTime, stoneTime } = cur;
         obj = { name, ower, type, planTime, stoneTime };
+        if (type == 2) {
+          obj.stoneTime = this.computedWithTime(cur.left, true);
+        }
         obj.planTime[0] = this.computedWithTime(cur.left, true);
         obj.planTime[1] = this.computedWithTime(
           cur.left + cur.widthMe - this.currentDaySize.value,
           true
         );
-        this.$refs.dialogAdd.form = obj;
+        this.$nextTick(() => {
+          this.$refs.dialogAdd.form = obj;
+        })
       }
-      this.dialogVal = true;
     },
     //删除
     handlerDel(row) {
@@ -674,9 +687,9 @@ export default {
         cur.planTime = row.planTime;
         if (cur.type != 3) {
           cur.startTime =
-            row.planTime.length > 0 ? row.planTime[0] : row.stoneTime;
+            row.stoneTime ? row.stoneTime : row.planTime[0];
           cur.endTime =
-            row.planTime.length > 0 ? row.planTime[1] : row.stoneTime;
+            row.stoneTime ? row.stoneTime : row.planTime[1];
           cur.left = this.computedTimeWidth(cur.startTime);
           cur.widthChild = cur.widthMe = this.computedTimeWidth(
             cur.startTime,
@@ -693,8 +706,8 @@ export default {
         cur = Object.assign(cur, row);
         cur.planTime = row.planTime;
         cur.startTime =
-          row.planTime.length > 0 ? row.planTime[0] : row.stoneTime;
-        cur.endTime = row.planTime.length > 0 ? row.planTime[1] : row.stoneTime;
+          row.stoneTime ? row.stoneTime : row.planTime[0];
+        cur.endTime = row.stoneTime ? row.stoneTime : row.planTime[1];
         cur.left = this.computedTimeWidth(cur.startTime);
         cur.widthChild = cur.widthMe = this.computedTimeWidth(
           cur.startTime,
@@ -907,6 +920,7 @@ export default {
           return item.id == row.id;
         });
         this.list[index].type = "1";
+        this.list[index].stoneTime = "";
         this.list[index].per = 0;
         this.list[index].left =
           row.left + row.widthMe - this.currentDaySize.value;
@@ -920,6 +934,7 @@ export default {
           if (cl.id == row.id) {
             cl.type = "1";
             cl.per = 0;
+            cl.stoneTime = "";
             cl.left = row.left + row.widthMe - this.currentDaySize.value;
             cl.widthMe = cl.widthChild = this.currentDaySize.value;
           }
