@@ -22,6 +22,18 @@
           </el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="类型" prop="type" v-if="title == '新建'">
+        <el-select v-model="form.type" style="width:100%">
+          <el-option
+            v-for="item in typeOptions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+            :disabled="item.disabled"
+          >
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="计划周期" prop="planTime" v-show="form.type == 1">
         <el-date-picker
           v-model="form.planTime"
@@ -44,19 +56,6 @@
         >
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="类型" prop="type" v-if="title == '新建'">
-        <el-select v-model="form.type" style="width:100%">
-          <el-option
-            v-for="item in typeOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-            :disabled="item.disabled"
-          >
-          </el-option>
-        </el-select>
-      </el-form-item>
-
       <el-form-item>
         <el-button type="primary" @click="onSubmit">保存</el-button>
         <el-button @click="onCancle">取消</el-button>
@@ -162,7 +161,7 @@ export default {
       }
     },
     isChildren: {
-      handler: function(val) {
+      handler: function (val) {
         this.$set(this.typeOptions, 2, {
           label: "分组",
           value: "3",
