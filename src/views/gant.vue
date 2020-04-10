@@ -323,7 +323,7 @@
       :title="title"
       :visible.sync="dialogVal"
       width="500px"
-      :before-close="hanleClose"
+      :before-close="handleClose"
       :append-to-body="true"
     >
       <dialogAdd
@@ -416,7 +416,7 @@ export default {
   computed: {
     computedList() {
       let arr = [];
-      this.list.forEach((item) => {
+      this.list.forEach(item => {
         if (!item.children || item.children.length < 1) {
           arr.push(item);
         } else if (item.children && item.children.length >= 1) {
@@ -588,8 +588,8 @@ export default {
         let cur = parent.children.find(item => {
           return item.id == row.id;
         });
-        let { name, ower, type, planTime, stoneTime } = cur;
-        obj = { name, ower, type, planTime, stoneTime };
+        let { name, ower, type, planTime, stoneTime, per } = cur;
+        obj = { name, ower, type, planTime, stoneTime, per };
         if (type == 2) {
           obj.stoneTime = this.computedWithTime(cur.left, true);
         }
@@ -601,14 +601,14 @@ export default {
         // console.log(obj);
         this.$nextTick(() => {
           this.$refs.dialogAdd.form = obj;
-        })
+        });
       } else {
         this.editRow[0] = row.id;
         let cur = this.list.find(item => {
           return item.id == row.id;
         });
-        let { name, ower, type, planTime, stoneTime } = cur;
-        obj = { name, ower, type, planTime, stoneTime };
+        let { name, ower, type, planTime, stoneTime, per } = cur;
+        obj = { name, ower, type, planTime, stoneTime, per };
         if (type == 2) {
           obj.stoneTime = this.computedWithTime(cur.left, true);
         }
@@ -619,7 +619,7 @@ export default {
         );
         this.$nextTick(() => {
           this.$refs.dialogAdd.form = obj;
-        })
+        });
       }
     },
     //删除
@@ -663,22 +663,24 @@ export default {
       }
     },
     //dialog beforClose
-    hanleClose(done) {
+    handleClose(done) {
       this.currentListIndex = "";
       this.isChildren = false;
       this.editRow = [];
       this.$refs.dialogAdd.resetFields();
+      this.$refs.dialogAdd.form.per = 0;
       done();
     },
     //dialog 取消
     onCancle() {
       this.currentListIndex = "";
       this.isChildren = false;
+      this.$refs.dialogAdd.form.per = 0;
       this.editRow = [];
     },
     //编辑保存
     handleEditSave(row) {
-      console.log(row);
+      // console.log(row);
       if (this.editRow.length == 1) {
         let cur = this.list.find(item => {
           return item.id == this.editRow[0];
@@ -686,15 +688,14 @@ export default {
         cur = Object.assign(cur, row);
         cur.planTime = row.planTime;
         if (cur.type != 3) {
-          cur.startTime =
-            row.stoneTime ? row.stoneTime : row.planTime[0];
-          cur.endTime =
-            row.stoneTime ? row.stoneTime : row.planTime[1];
+          cur.startTime = row.stoneTime ? row.stoneTime : row.planTime[0];
+          cur.endTime = row.stoneTime ? row.stoneTime : row.planTime[1];
           cur.left = this.computedTimeWidth(cur.startTime);
           cur.widthChild = cur.widthMe = this.computedTimeWidth(
             cur.startTime,
             cur.endTime
           );
+          cur.per = row.per;
         }
       } else if (this.editRow.length == 2) {
         let parent = this.list.find(item => {
@@ -705,8 +706,7 @@ export default {
         });
         cur = Object.assign(cur, row);
         cur.planTime = row.planTime;
-        cur.startTime =
-          row.stoneTime ? row.stoneTime : row.planTime[0];
+        cur.startTime = row.stoneTime ? row.stoneTime : row.planTime[0];
         cur.endTime = row.stoneTime ? row.stoneTime : row.planTime[1];
         cur.left = this.computedTimeWidth(cur.startTime);
         cur.widthChild = cur.widthMe = this.computedTimeWidth(
@@ -716,6 +716,7 @@ export default {
         this.setGroupWidth(this.editRow[0]);
       }
       this.editRow = [];
+      this.$refs.dialogAdd.form.per = 0;
     },
     // 根据时间计算距离
     computedTimeWidth(startTime, endTime) {
@@ -727,7 +728,7 @@ export default {
         this.currentDaySize.value;
       let width =
         (Math.floor(endTime - startTime) / (1000 * 60 * 60 * 24)) *
-        this.currentDaySize.value +
+          this.currentDaySize.value +
         this.currentDaySize.value;
       if (!endTime) {
         return left;
@@ -740,7 +741,7 @@ export default {
       let obj = Object.assign({}, val);
       // console.log(obj);
       let index = this.list.length;
-      obj.per = 0;
+      // obj.per = 0;
       obj.startTime = obj.planTime.length > 0 ? obj.planTime[0] : obj.stoneTime;
       obj.endTime = obj.planTime.length > 0 ? obj.planTime[1] : obj.stoneTime;
 
@@ -772,6 +773,7 @@ export default {
         this.setStoneLine();
       }
       if (obj.type == 3) {
+        obj.per = 0;
         obj.id = new Date().getTime();
         obj.expand = true;
         if (index == 0) {
@@ -814,8 +816,9 @@ export default {
       this.currentListIndex = "";
       this.isChildren = false;
       this.$refs.dialogAdd.resetFields();
+      this.$refs.dialogAdd.form.per = 0;
       this.handlerRowClick(obj);
-      this.setStoneLine()
+      this.setStoneLine();
     },
     //修改后续高度
     resetTop(zindex, reduce, isexpand) {
@@ -1051,7 +1054,7 @@ export default {
         this.setGroupPer(parentId);
         this.$set(this.list, index, this.list[index]);
       } else {
-        this.list.forEach((item) => {
+        this.list.forEach(item => {
           if (item.id == id) {
             item.per = per;
           }
@@ -1082,7 +1085,7 @@ export default {
     handleGoToday() {
       let s =
         Math.round(window.innerWidth / this.currentDaySize.value / 2) *
-        this.currentDaySize.value -
+          this.currentDaySize.value -
         this.rightLineX;
       let width =
         (Math.floor(
@@ -1091,7 +1094,7 @@ export default {
           ).getTime() - new Date(`${this.currentYear - 1}/01/01`).getTime()
         ) /
           (1000 * 60 * 60 * 24)) *
-        this.currentDaySize.value -
+          this.currentDaySize.value -
         s;
       window.scrollTo(width, 0);
     },
@@ -1196,7 +1199,7 @@ export default {
           });
           this.setGroupWidth(parentId);
         } else {
-          this.list.forEach((item) => {
+          this.list.forEach(item => {
             if (item.id == id) {
               item.widthMe = item.widthChild = result;
               item.left = result1;
@@ -1299,7 +1302,7 @@ export default {
           });
           this.setGroupWidth(parentId);
         } else {
-          this.list.forEach((item) => {
+          this.list.forEach(item => {
             if (item.id == id) {
               item.widthMe = item.widthChild = result;
               // item.left = result1;
@@ -1370,7 +1373,7 @@ export default {
         Math.round(
           parseInt(this.$refs[dom][0].style.left) / this.currentDaySize.value
         ) *
-        this.currentDaySize.value +
+          this.currentDaySize.value +
         this.currentDaySize.value;
       let end =
         parseInt(this.$refs[dom][0].style.left) +
@@ -1403,7 +1406,7 @@ export default {
         parseInt(this.$refs[dom][0].style.width);
       end =
         Math.round(end / this.currentDaySize.value) *
-        this.currentDaySize.value -
+          this.currentDaySize.value -
         this.currentDaySize.value;
       this.currentProjectMsg = {
         name: this.computedList[index].name,
@@ -1518,7 +1521,7 @@ export default {
           });
           this.setGroupWidth(parentId);
         } else {
-          this.list.forEach((item) => {
+          this.list.forEach(item => {
             if (item.id == id) {
               item.left = left;
             }
@@ -1646,7 +1649,7 @@ export default {
           break;
       }
     },
-    setList() { },
+    setList() {},
     //设置里程碑线的高度
     setStoneLine(isFirst) {
       this.$nextTick(() => {

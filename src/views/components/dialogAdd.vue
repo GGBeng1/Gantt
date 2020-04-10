@@ -34,6 +34,13 @@
           </el-option>
         </el-select>
       </el-form-item>
+      <el-form-item label="进度" v-show="form.type == 1">
+        <el-input-number
+          v-model="form.per"
+          :min="0"
+          :max="100"
+        ></el-input-number>
+      </el-form-item>
       <el-form-item label="计划周期" prop="planTime" v-show="form.type == 1">
         <el-date-picker
           v-model="form.planTime"
@@ -77,6 +84,7 @@ export default {
       form: {
         name: "",
         ower: "",
+        per: 0,
         type: "1",
         planTime: [],
         stoneTime: ""
@@ -161,7 +169,7 @@ export default {
       }
     },
     isChildren: {
-      handler: function (val) {
+      handler: function(val) {
         this.$set(this.typeOptions, 2, {
           label: "分组",
           value: "3",
