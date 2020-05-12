@@ -105,6 +105,11 @@ export default {
         let table = this.$refs.tableMenu.bodyWrapper;
         // console.log(newValue, table);
         table.scrollTo(0, newValue);
+        // table.scrollTo({
+        //   top: newValue,
+        //   left: 0,
+        //   behavior: "smooth"
+        // });
       }
     }
   },

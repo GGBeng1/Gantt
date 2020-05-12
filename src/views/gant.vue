@@ -85,6 +85,11 @@
                   weekday1: j.weekday == 6,
                   today: j.today
                 }"
+                :style="{
+                  width: currentDaySize.value + 'px',
+                  height:
+                    j.weekday == 0 || j.weekday == 6 ? lineBGHeight : '0px'
+                }"
               ></span>
             </template>
             <template v-if="currentDaySize.value == 24">
@@ -128,6 +133,11 @@
                   weekday1: j.weekday == 6,
                   today: j.today
                 }"
+                :style="{
+                  width: currentDaySize.value + 'px',
+                  height:
+                    j.weekday == 0 || j.weekday == 6 ? lineBGHeight : '0px'
+                }"
               ></span>
             </template>
             <template v-if="currentDaySize.value == 12">
@@ -167,6 +177,11 @@
                   today: j.today
                 }"
                 style="border-right:none;"
+                :style="{
+                  width: currentDaySize.value + 'px',
+                  height:
+                    j.weekday == 0 || j.weekday == 6 ? lineBGHeight : '0px'
+                }"
               ></span>
             </template>
           </div>
@@ -252,7 +267,7 @@
               ></div>
               <div
                 class="stoneLine"
-                :style="{ top: -12 + 52 - item.top + 'px' }"
+                :style="{ top: -item.top + 'px', height: item.top + 'px' }"
                 v-if="item.type == '2'"
                 @mouseenter="stoneLineMouseenter"
               ></div>
@@ -420,7 +435,10 @@ export default {
       editRow: [],
       currentRow: null,
       // BG滚动高度
-      BGScrollTop: 0
+      BGScrollTop: 0,
+      // 背景高度
+      lineBGHeight: 0,
+      expandArr: []
     };
   },
   computed: {
@@ -456,6 +474,11 @@ export default {
     TableScrollTop(val) {
       let lineBG = this.$refs.lineBG;
       lineBG.scrollTo(0, val);
+      // lineBG.scrollTo({
+      //   top: val,
+      //   left: 0,
+      //   behavior: "smooth"
+      // });
     },
     handlerBGScroll(e) {
       this.BGScrollTop = e.srcElement.scrollTop;
@@ -471,11 +494,16 @@ export default {
         {
           name: "1",
           ower: "",
-          type: "3",
           per: 0,
+          type: "3",
+          planTime: [],
+          stoneTime: "",
           startTime: "",
           endTime: "",
-          id: 1568028397666,
+          id: 1589269666397,
+          // expand: true,
+          // top: 15,
+          isShow: true,
           children: [
             {
               name: "1",
@@ -764,16 +792,41 @@ export default {
               parentId: 1568028397666
             }
           ]
+          // widthChild: 120,
+          // widthMe: 120,
+          // left: 19880
         },
         {
-          name: "2",
+          name: "3",
           ower: "",
-          type: "2",
-          stoneTime: 1567958400000,
           per: 100,
-          startTime: 1567958400000,
-          endTime: 1567958400000,
-          id: 1568028411761
+          type: "2",
+          planTime: [],
+          stoneTime: 1589472000000,
+          startTime: 1589472000000,
+          endTime: 1589472000000,
+          // left: 20000,
+          // widthChild: 40,
+          // widthMe: 40,
+          // top: 50,
+          id: 1589269688345,
+          isShow: true
+        },
+        {
+          name: "4",
+          ower: "",
+          per: 100,
+          type: "2",
+          planTime: [],
+          stoneTime: 1589558400000,
+          startTime: 1589558400000,
+          endTime: 1589558400000,
+          // left: 20040,
+          // widthChild: 40,
+          // widthMe: 40,
+          // top: 85,
+          id: 1589269707819,
+          isShow: true
         }
       ];
       l.forEach((item, index) => {
@@ -821,6 +874,8 @@ export default {
                 });
               }
             }
+          } else {
+            item.top = l[index - 1].top + 40;
           }
         }
       });
@@ -830,10 +885,15 @@ export default {
           this.setGroupPer(item.id, l);
         }
       });
-      console.log(l);
+      // console.log(l);
       this.list = l;
       this.setStoneLine(1);
-      window.scrollTo(this.list[0].left - 100, 0);
+      // window.scrollTo(this.list[0].left - 100, 0);
+      window.scrollTo({
+        top: 0,
+        left: this.list[0].left - 100,
+        behavior: "smooth"
+      });
     },
     //设置左侧leftmenu高亮
     handlerSelect(row) {
@@ -1043,7 +1103,7 @@ export default {
           obj.startTime,
           obj.endTime
         );
-
+        // console.log(obj.type);
         if (index == 0) {
           obj.top = 15;
         } else {
@@ -1054,15 +1114,22 @@ export default {
             obj.top =
               this.list[index - 1].children[
                 this.list[index - 1].children.length - 1
-              ].top + 35;
+              ].top + 40;
+            // console.log("ggggggg");
+            // obj.top =
+            //   this.list[index - 1].children.length * 40 +
+            //   this.list[index - 1].top +
+            //   40;
           } else {
-            obj.top = this.list[index - 1].top + 35;
+            // console.log("zzzz");
+            obj.top = this.list[index - 1].top + 40;
+            // console.log(obj.top);
           }
         }
       }
       if (obj.type == 2) {
         obj.per = 100;
-        this.setStoneLine();
+        // this.setStoneLine();
       }
       if (obj.type == 3) {
         obj.per = 0;
@@ -1078,9 +1145,9 @@ export default {
             obj.top =
               this.list[index - 1].children[
                 this.list[index - 1].children.length - 1
-              ].top + 35;
+              ].top + 40;
           } else {
-            obj.top = this.list[index - 1].top + 35;
+            obj.top = this.list[index - 1].top + 40;
           }
         }
       }
@@ -1110,13 +1177,35 @@ export default {
       this.$refs.dialogAdd.resetFields();
       this.$refs.dialogAdd.form.per = 0;
       this.handlerRowClick(obj);
-      this.setStoneLine();
+      this.handlerCheckIsExpandRow();
+    },
+    handlerCheckIsExpandRow() {
+      this.$nextTick(() => {
+        if (this.expandArr.length == 0) return;
+        this.expandArr.forEach(i => {
+          this.$refs.leftMenu.$refs.tableMenu.toggleRowExpansion(
+            this.list[i],
+            false
+          );
+        });
+        this.list.forEach((i, index) => {
+          if (index > this.expandArr[0]) {
+            i.top = i.top + 40;
+            if (i.children && i.children.length > 0 && i.expand) {
+              i.children.forEach(z => {
+                z.top = z.top + 40;
+              });
+            }
+          }
+        });
+      });
     },
     //修改后续高度
     resetTop(zindex, reduce, isexpand) {
-      // console.log(zindex);
+      // console.log(zindex, reduce, isexpand);
       let num = reduce ? -40 : 40;
       if (!reduce && !isexpand) {
+        // console.log(2);
         this.list.forEach((item, index) => {
           if (index > zindex) {
             item.top = item.top + 40;
@@ -1128,6 +1217,7 @@ export default {
           }
         });
       } else {
+        // console.log(1);
         this.list.forEach((item, index) => {
           if (index > zindex) {
             item.top = item.top + num * this.list[zindex].children.length;
@@ -1184,6 +1274,16 @@ export default {
     handlerAddGantt() {
       this.dialogVal = true;
       this.title = "新建";
+      // console.log(this.list);
+      let arr = [];
+      this.list.forEach((i, index) => {
+        if (i.children && i.children.length > 0 && i.expand == false) {
+          console.log(i.children && i.children.length > 0 && i.expand == false);
+          arr.push(index);
+        }
+      });
+      this.expandArr = arr;
+      // console.log(arr);
       this.$nextTick(() => {
         this.$refs.dialogAdd.resetFields();
       });
@@ -1295,7 +1395,11 @@ export default {
     handlerRowClick(row) {
       // console.log(row);
       this.currentRow = row;
-      window.scrollTo(row.left - 100, 0);
+      window.scrollTo({
+        top: 0,
+        left: row.left - 100,
+        behavior: "smooth"
+      });
     },
     //更改daySize
     handleSetDaySize(item) {
@@ -1388,7 +1492,11 @@ export default {
           (1000 * 60 * 60 * 24)) *
           this.currentDaySize.value -
         s;
-      window.scrollTo(width, 0);
+      window.scrollTo({
+        top: 0,
+        left: width,
+        behavior: "smooth"
+      });
     },
     //左侧拖拽增加
     /**
@@ -1415,7 +1523,12 @@ export default {
           if (!this.timer) {
             this.timer = window.setInterval(() => {
               z = window.scrollX - this.currentDaySize.value;
-              window.scrollTo(z, 0);
+              // window.scrollTo(z, 0);
+              window.scrollTo({
+                top: 0,
+                left: z,
+                behavior: "smooth"
+              });
               addwidth = cx - event.pageX;
             }, 50);
           }
@@ -1423,7 +1536,12 @@ export default {
           if (!timers) {
             timers = window.setInterval(() => {
               x = window.scrollX + this.currentDaySize.value;
-              window.scrollTo(x, 0);
+              // window.scrollTo(x, 0);
+              window.scrollTo({
+                top: 0,
+                left: x,
+                behavior: "smooth"
+              });
               addwidth = -(event.pageX - cx);
             }, 50);
           }
@@ -1525,7 +1643,12 @@ export default {
             wx = window.scrollX;
             this.timer = window.setInterval(() => {
               z = z + this.currentDaySize.value;
-              window.scrollTo(z + wx, 0);
+              // window.scrollTo(z + wx, 0);
+              window.scrollTo({
+                top: 0,
+                left: z + wx,
+                behavior: "smooth"
+              });
               addwidth = event.pageX - cx + z;
             }, 50);
           }
@@ -1533,7 +1656,12 @@ export default {
           if (!timers) {
             timers = window.setInterval(() => {
               x = window.scrollX - this.currentDaySize.value;
-              window.scrollTo(x, 0);
+              // window.scrollTo(x, 0);
+              window.scrollTo({
+                top: 0,
+                left: x,
+                behavior: "smooth"
+              });
               addwidth = event.pageX - cx;
             }, 50);
           }
@@ -1769,14 +1897,24 @@ export default {
       document.onmousemove = event => {
         if (event.clientX >= window.innerWidth - 40) {
           z = window.scrollX + this.currentDaySize.value;
-          window.scrollTo(z, 0);
+          // window.scrollTo(z, 0);
+          window.scrollTo({
+            top: 0,
+            left: z,
+            behavior: "smooth"
+          });
           let newWith = event.pageX - cp;
           result = this.computedList[index].left + newWith;
           line.style.left = result + "px";
           if (result <= 0) result = 0;
         } else if (event.clientX <= 40 + this.rightLineX) {
           z = window.scrollX - this.currentDaySize.value;
-          window.scrollTo(z, 0);
+          // window.scrollTo(z, 0);
+          window.scrollTo({
+            top: 0,
+            left: z,
+            behavior: "smooth"
+          });
           let newWith = event.pageX - cp;
           result = this.computedList[index].left + newWith;
           if (result <= 0) result = 0;
@@ -1945,14 +2083,19 @@ export default {
     //设置里程碑线的高度
     setStoneLine(isFirst) {
       this.$nextTick(() => {
-        let arr = Array.from(document.getElementsByClassName("stoneLine"));
+        // let arr = Array.from(document.getElementsByClassName("stoneLine"));
         let height = window.getComputedStyle(
-          document.getElementsByClassName("today")[0]
+          document.getElementsByClassName("lineBG")[0]
         ).height;
-        height = isFirst ? parseFloat(height) : parseFloat(height) - 16.8;
-        arr.forEach(e => {
-          e.style.height = height + "px";
-        });
+        // console.log(height);
+        this.lineBGHeight = height;
+        // height = isFirst ? parseFloat(height) : parseFloat(height) - 16.8;
+        // arr.forEach(e => {
+        //   // e.style.height = height + "px";
+        //   console.log(e.getBoundingClientRect());
+        // });
+        // console.log(arr[arr.length - 1].getBoundingClientRect());
+        // arr[arr.length - 1].height = "1095px";
       });
     },
     //顶部固定时间
@@ -1987,6 +2130,7 @@ export default {
     document.addEventListener("scroll", this.handleScroll);
     this.getDay();
     this.setList();
+    this.setStoneLine();
   },
   beforeDestroy() {
     window.removeEventListener("scroll", this.handleScroll);
@@ -2240,6 +2384,7 @@ export default {
     }
     .day {
       // width: 40px;
+      position: relative;
       display: inline-block;
       height: calc(100% - 21px);
       box-sizing: border-box;
@@ -2267,8 +2412,11 @@ export default {
         color: #fff;
       }
       .dateBG {
+        position: absolute;
+        top: 20px;
+        left: 0px;
         display: block;
-        height: 100%;
+        // height: 100%;
       }
       .today {
         position: relative;
