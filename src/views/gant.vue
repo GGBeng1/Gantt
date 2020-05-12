@@ -47,122 +47,229 @@
       </div>
       <div class="topMonth" v-if="showFixdTopMonth">{{ fixdTopMonth }}</div>
       <div class="allDaysArray">
-        <div
-          v-for="(j, index) in days"
-          :key="index + 'cc'"
-          class="day"
-          :style="{ width: currentDaySize.value + 'px' }"
-        >
-          <template v-if="currentDaySize.value == 40">
-            <span
-              class="dateNum todayDateNum"
-              v-if="j.today"
-              style="border-left:1px solid #d7d7d7;"
-            >
-              今天
-            </span>
-            <span
-              v-else
-              class="dateNum"
-              :style="{ borderLeft: index == 0 ? 'none' : '1px solid #d7d7d7' }"
-              :class="{
-                weekday: j.weekday == 0 || j.weekday == 6,
-                isHover:
-                  j.width >= currentLineDay.start &&
-                  j.width <= currentLineDay.end
-              }"
-              >{{ j.date }}</span
-            >
-            <span
-              class="dateBG"
-              :class="{
-                weekday2: j.weekday == 0,
-                weekday1: j.weekday == 6,
-                today: j.today
-              }"
-            ></span>
-          </template>
-          <template v-if="currentDaySize.value == 24">
-            <!-- <span class="dateNum todayDateNum" v-if="j.today">
-              {{ j.date }}
-            </span> -->
-            <span
-              class="dateNum"
-              :class="{
-                weekday: j.weekday == 0 || j.weekday == 6,
-                isHover:
-                  j.width >= currentLineDay.start &&
-                  j.width <= currentLineDay.end,
-                nodBorder:
-                  j.width >= currentLineDay.start &&
-                  j.width <= currentLineDay.end
-              }"
-            >
-              <div
-                style="width:100%21px;height:100%;"
+        <div class="alldays">
+          <div
+            v-for="(j, index) in days"
+            :key="index + 'cc'"
+            class="day"
+            :style="{ width: currentDaySize.value + 'px' }"
+          >
+            <template v-if="currentDaySize.value == 40">
+              <span
+                class="dateNum todayDateNum"
+                v-if="j.today"
+                style="border-left:1px solid #d7d7d7;"
+              >
+                今天
+              </span>
+              <span
+                v-else
+                class="dateNum"
                 :style="{
                   borderLeft: index == 0 ? 'none' : '1px solid #d7d7d7'
                 }"
-                v-show="
-                  (j.width == currentLineDay.end &&
-                    isHover &&
-                    j.weekday != 1) ||
-                    (j.width == currentLineDay.start &&
+                :class="{
+                  weekday: j.weekday == 0 || j.weekday == 6,
+                  isHover:
+                    j.width >= currentLineDay.start &&
+                    j.width <= currentLineDay.end
+                }"
+                >{{ j.date }}</span
+              >
+              <span
+                class="dateBG"
+                :class="{
+                  weekday2: j.weekday == 0,
+                  weekday1: j.weekday == 6,
+                  today: j.today
+                }"
+              ></span>
+            </template>
+            <template v-if="currentDaySize.value == 24">
+              <!-- <span class="dateNum todayDateNum" v-if="j.today">
+              {{ j.date }}
+            </span> -->
+              <span
+                class="dateNum"
+                :class="{
+                  weekday: j.weekday == 0 || j.weekday == 6,
+                  isHover:
+                    j.width >= currentLineDay.start &&
+                    j.width <= currentLineDay.end,
+                  nodBorder:
+                    j.width >= currentLineDay.start &&
+                    j.width <= currentLineDay.end
+                }"
+              >
+                <div
+                  style="width:100%21px;height:100%;"
+                  :style="{
+                    borderLeft: index == 0 ? 'none' : '1px solid #d7d7d7'
+                  }"
+                  v-show="
+                    (j.width == currentLineDay.end &&
                       isHover &&
                       j.weekday != 1) ||
-                    j.weekday == 1
-                "
-              >
-                {{ j.date }}
-              </div>
-            </span>
-            <span
-              class="dateBG"
-              :class="{
-                weekday2: j.weekday == 0,
-                weekday1: j.weekday == 6,
-                today: j.today
-              }"
-            ></span>
-          </template>
-          <template v-if="currentDaySize.value == 12">
-            <!-- <span class="dateNum todayDateNum" v-if="j.today">
+                      (j.width == currentLineDay.start &&
+                        isHover &&
+                        j.weekday != 1) ||
+                      j.weekday == 1
+                  "
+                >
+                  {{ j.date }}
+                </div>
+              </span>
+              <span
+                class="dateBG"
+                :class="{
+                  weekday2: j.weekday == 0,
+                  weekday1: j.weekday == 6,
+                  today: j.today
+                }"
+              ></span>
+            </template>
+            <template v-if="currentDaySize.value == 12">
+              <!-- <span class="dateNum todayDateNum" v-if="j.today">
               {{ j.date }}
             </span> -->
-            <span
-              class="dateNum"
-              :class="{
-                isHover:
-                  j.width >= currentLineDay.start &&
-                  j.width <= currentLineDay.end,
-                nodBorder:
-                  j.width >= currentLineDay.start &&
-                  j.width <= currentLineDay.end
-              }"
-            >
-              <div
-                style="width:100%;height:100%;font-size:10px!important;"
-                :style="{
-                  borderLeft: index == 0 ? 'none' : '1px solid #d7d7d7'
+              <span
+                class="dateNum"
+                :class="{
+                  isHover:
+                    j.width >= currentLineDay.start &&
+                    j.width <= currentLineDay.end,
+                  nodBorder:
+                    j.width >= currentLineDay.start &&
+                    j.width <= currentLineDay.end
                 }"
-                v-show="
-                  (j.width == currentLineDay.end && isHover && j.date != 1) ||
-                    (j.width == currentLineDay.start &&
-                      isHover &&
-                      j.date != 1) ||
-                    j.date == 1
-                "
               >
-                {{ j.date }}
-              </div>
-            </span>
-            <span
-              class="dateBG weekday2"
-              :class="{
-                today: j.today
+                <div
+                  style="width:100%;height:100%;font-size:10px!important;"
+                  :style="{
+                    borderLeft: index == 0 ? 'none' : '1px solid #d7d7d7'
+                  }"
+                  v-show="
+                    (j.width == currentLineDay.end && isHover && j.date != 1) ||
+                      (j.width == currentLineDay.start &&
+                        isHover &&
+                        j.date != 1) ||
+                      j.date == 1
+                  "
+                >
+                  {{ j.date }}
+                </div>
+              </span>
+              <span
+                class="dateBG weekday2"
+                :class="{
+                  today: j.today
+                }"
+                style="border-right:none;"
+              ></span>
+            </template>
+          </div>
+        </div>
+        <div class="lineBG">
+          <template v-for="(item, index) in computedList">
+            <div
+              class="line"
+              :style="{
+                left: item.left + 'px',
+                width: item.widthMe + 'px',
+                top: item.top + 'px'
               }"
-              style="border-right:none;"
-            ></span>
+              v-show="(item.type == '1' || item.type == '2') && item.isShow"
+              :ref="'line' + item.id"
+              :key="item.id + index + 'ccc'"
+              @mousedown="
+                lineMousedown(
+                  `line${item.id}`,
+                  $event,
+                  item.id,
+                  item.parentId,
+                  index
+                )
+              "
+              @mouseover="
+                lineMouseover(
+                  `line${item.id}`,
+                  $event,
+                  item.id,
+                  item.parentId,
+                  index
+                )
+              "
+              @mouseleave="lineMouseleave"
+              @mouseenter="
+                lineMouseenter(
+                  `line${item.id}`,
+                  $event,
+                  item.id,
+                  item.parentId,
+                  index
+                )
+              "
+            >
+              <slider
+                :min="0"
+                :max="100"
+                v-model="item.per"
+                :id="item.id"
+                :parentId="item.parentId"
+                :widths="item.widthChild"
+                @thunkMousedown="thunkMousedown"
+                @thunkMouseup="thunkMouseup"
+                @thunkMousemove="thunkMousemove"
+                v-show="item.type == '1'"
+              ></slider>
+              <div
+                class="leftCurDrag"
+                v-show="item.type == '1'"
+                @mousedown.stop="
+                  leftCurDragMounsedown(
+                    `line${item.id}`,
+                    $event,
+                    item.id,
+                    item.parentId,
+                    index
+                  )
+                "
+              ></div>
+              <div
+                class="rightCurDrag"
+                v-show="item.type == '1'"
+                @mousedown.stop="
+                  rightCurDragMounsedown(
+                    `line${item.id}`,
+                    $event,
+                    item.id,
+                    item.parentId,
+                    index
+                  )
+                "
+              ></div>
+              <div
+                class="stoneLine"
+                :style="{ top: -12 + 52 - item.top + 'px' }"
+                v-if="item.type == '2'"
+                @mouseenter="stoneLineMouseenter"
+              ></div>
+              <div class="milestone" v-if="item.type == '2'">
+                <i class="el-icon-check"></i>
+              </div>
+            </div>
+            <div
+              class="group"
+              :style="{
+                top: item.top + 'px',
+                left: item.left + 'px',
+                width: item.widthMe + 'px'
+              }"
+              v-if="item.type == '3'"
+              :key="item.id + 'zzzzz'"
+            >
+              <div class="progress" :style="{ width: item.per + '%' }"></div>
+            </div>
           </template>
         </div>
       </div>
@@ -186,107 +293,6 @@
           </el-dropdown-menu>
         </el-dropdown>
       </div>
-      <template v-for="(item, index) in computedList">
-        <div
-          class="line"
-          :style="{
-            left: item.left + 'px',
-            width: item.widthMe + 'px',
-            top: item.top + 'px'
-          }"
-          v-show="(item.type == '1' || item.type == '2') && item.isShow"
-          :ref="'line' + item.id"
-          :key="item.id + index + 'ccc'"
-          @mousedown="
-            lineMousedown(
-              `line${item.id}`,
-              $event,
-              item.id,
-              item.parentId,
-              index
-            )
-          "
-          @mouseover="
-            lineMouseover(
-              `line${item.id}`,
-              $event,
-              item.id,
-              item.parentId,
-              index
-            )
-          "
-          @mouseleave="lineMouseleave"
-          @mouseenter="
-            lineMouseenter(
-              `line${item.id}`,
-              $event,
-              item.id,
-              item.parentId,
-              index
-            )
-          "
-        >
-          <slider
-            :min="0"
-            :max="100"
-            v-model="item.per"
-            :id="item.id"
-            :parentId="item.parentId"
-            :widths="item.widthChild"
-            @thunkMousedown="thunkMousedown"
-            @thunkMouseup="thunkMouseup"
-            @thunkMousemove="thunkMousemove"
-            v-show="item.type == '1'"
-          ></slider>
-          <div
-            class="leftCurDrag"
-            v-show="item.type == '1'"
-            @mousedown.stop="
-              leftCurDragMounsedown(
-                `line${item.id}`,
-                $event,
-                item.id,
-                item.parentId,
-                index
-              )
-            "
-          ></div>
-          <div
-            class="rightCurDrag"
-            v-show="item.type == '1'"
-            @mousedown.stop="
-              rightCurDragMounsedown(
-                `line${item.id}`,
-                $event,
-                item.id,
-                item.parentId,
-                index
-              )
-            "
-          ></div>
-          <div
-            class="stoneLine"
-            :style="{ top: -12 + 52 - item.top + 'px' }"
-            v-if="item.type == '2'"
-            @mouseenter="stoneLineMouseenter"
-          ></div>
-          <div class="milestone" v-if="item.type == '2'">
-            <i class="el-icon-check"></i>
-          </div>
-        </div>
-        <div
-          class="group"
-          :style="{
-            top: item.top + 'px',
-            left: item.left + 'px',
-            width: item.widthMe + 'px'
-          }"
-          v-if="item.type == '3'"
-          :key="item.id + 'zzzzz'"
-        >
-          <div class="progress" :style="{ width: item.per + '%' }"></div>
-        </div>
-      </template>
       <transition name="el-zoom-in-center">
         <div
           class="projectMsg"
@@ -468,7 +474,282 @@ export default {
               per: 0,
               startTime: 1567958400000,
               endTime: 1568217600000,
-              id: 1568028403474,
+              id: 1,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 2,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 3,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 4,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 5,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 41,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 42,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 444,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 43,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 4441,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 4332,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 44411,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 43321,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 444112,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 433211,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 6,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 7,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 8,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 9,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 10,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 11,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 12,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 13,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 14,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 15,
+              parentId: 1568028397666
+            },
+            {
+              name: "1",
+              ower: "",
+              type: "1",
+              stoneTime: "",
+              per: 0,
+              startTime: 1567958400000,
+              endTime: 1568217600000,
+              id: 16,
               parentId: 1568028397666
             }
           ]
@@ -494,13 +775,13 @@ export default {
             : this.computedTimeWidth(item.startTime, item.endTime);
         item.isShow = true;
         if (index - 1 < 0) {
-          item.top = 52;
+          item.top = 15;
           if (item.type == 3) {
             item.isexpand = true;
             if (item.children.length > 0) {
               item.children.forEach((k, i) => {
                 k.planTime = [];
-                k.top = item.top + i * 40 + 40;
+                k.top = item.top + i * 40 + 35;
                 k.isShow = true;
                 k.left = this.computedTimeWidth(k.startTime);
                 k.widthMe = k.widthChild = this.computedTimeWidth(
@@ -753,7 +1034,7 @@ export default {
         );
 
         if (index == 0) {
-          obj.top = 52;
+          obj.top = 15;
         } else {
           if (
             this.list[index - 1].children &&
@@ -762,9 +1043,9 @@ export default {
             obj.top =
               this.list[index - 1].children[
                 this.list[index - 1].children.length - 1
-              ].top + 40;
+              ].top + 35;
           } else {
-            obj.top = this.list[index - 1].top + 40;
+            obj.top = this.list[index - 1].top + 35;
           }
         }
       }
@@ -777,7 +1058,7 @@ export default {
         obj.id = new Date().getTime();
         obj.expand = true;
         if (index == 0) {
-          obj.top = 52;
+          obj.top = 15;
         } else {
           if (
             this.list[index - 1].children &&
@@ -786,9 +1067,9 @@ export default {
             obj.top =
               this.list[index - 1].children[
                 this.list[index - 1].children.length - 1
-              ].top + 40;
+              ].top + 35;
           } else {
-            obj.top = this.list[index - 1].top + 40;
+            obj.top = this.list[index - 1].top + 35;
           }
         }
       }
@@ -1708,6 +1989,7 @@ export default {
   height: 100%;
   user-select: none;
   position: relative;
+  // overflow: hidden;
   .header {
     height: 40px;
     position: relative;
@@ -1782,7 +2064,7 @@ export default {
   }
   .date {
     display: flex;
-    height: calc(100% - 40px);
+    height: calc(100% - 60px);
     position: relative;
     .topMonth {
       // width: 100px;
@@ -1920,11 +2202,19 @@ export default {
     }
   }
   .allDaysArray {
-    display: flex;
     position: absolute;
     left: 0px;
     top: 21px;
     height: calc(100% - 21px);
+    .alldays {
+      display: flex;
+    }
+    .lineBG {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: scroll;
+    }
     .weekday {
       color: #c7c7c7;
     }
