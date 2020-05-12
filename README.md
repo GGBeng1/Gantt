@@ -30,18 +30,16 @@ yarn run serve
 正在准备重新组织，为组件化做准备，目前想要在项目中使用只需要引入该项目中的`gant.vue`即可
 批量数据导入导出方法已经写好，直接copy即可！~
 
-关于时间跨度的问题[#5](https://github.com/GGBeng1/Gantt/issues/5)
-目前无法通过更改跨度配置来实现其他跨度，比如增加小时等。因为在初始化的时候一些配置以及写死，后续会更改作为api放出。
 ```
 
 ### 更新说明
 
-```
 支持编辑
 支持删除
-修复不能垂直滚动的bug(同时增加双向同时滚动) [#4](https://github.com/GGBeng1/Gantt/issues/4)
-修复elementUI引起的bug
-```
+修复不能垂直滚动的 bug(同时增加双向同时滚动) [#4](https://github.com/GGBeng1/Gantt/issues/4)
+修复 elementUI 引起的 bug
+关于时间跨度的问题[#5](https://github.com/GGBeng1/Gantt/issues/5)
+目前无法通过更改跨度配置来实现其他跨度，比如增加小时等。因为在初始化的时候一些配置以及写死，后续会更改作为 api 放出
 
 ### 查看示例
 
