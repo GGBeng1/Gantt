@@ -12,6 +12,7 @@
       fit
       style="width: 100%"
       row-key="id"
+      height="100%"
       default-expand-all
       highlight-current-row
       @row-click="handlerRowClick"
@@ -90,22 +91,23 @@
 <script>
 export default {
   props: {
-    list: Array
+    list: Array,
+    BGScrollTop: Number
   },
   computed: {
     tableData() {
       return this.list;
     }
   },
-  // watch: {
-  //   list: {
-  //     handler: function(newValue) {
-  //       this.tableData = newValue;
-  //       // this.$set(this, tableData, newValue);
-  //     },
-  //     deep: true
-  //   }
-  // },
+  watch: {
+    BGScrollTop: {
+      handler: function(newValue) {
+        let table = this.$refs.tableMenu.bodyWrapper;
+        // console.log(newValue, table);
+        table.scrollTo(0, newValue);
+      }
+    }
+  },
   data() {
     return {
       // tableData: [],
@@ -181,6 +183,13 @@ export default {
     };
   },
   methods: {
+    handlerWatchScroll() {
+      let table = this.$refs.tableMenu.bodyWrapper;
+      table.addEventListener("scroll", e => {
+        // console.log(e.srcElement.scrollTop);
+        this.$emit("TableScrollTop", e.srcElement.scrollTop);
+      });
+    },
     handlerSelect(row) {
       this.$refs.tableMenu.setCurrentRow(row);
     },
@@ -305,6 +314,9 @@ export default {
           .catch(() => {});
       }
     }
+  },
+  mounted() {
+    this.handlerWatchScroll();
   }
 };
 </script>
@@ -313,6 +325,7 @@ export default {
 .tableMneu {
   width: 100%;
   position: relative;
+  height: 100%;
   .mask {
     position: fixed;
     left: 0;

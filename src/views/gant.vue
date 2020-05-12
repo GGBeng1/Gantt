@@ -17,6 +17,8 @@
       <leftMenu
         :list="list"
         ref="leftMenu"
+        :BGScrollTop.sync="BGScrollTop"
+        @TableScrollTop="TableScrollTop"
         @handlerRowClick="handlerRowClick"
         @milestone="handlerMilestone"
         @planProject="handlerPlanProject"
@@ -169,7 +171,7 @@
             </template>
           </div>
         </div>
-        <div class="lineBG">
+        <div class="lineBG" @scroll="handlerBGScroll" ref="lineBG">
           <template v-for="(item, index) in computedList">
             <div
               class="line"
@@ -416,7 +418,9 @@ export default {
       currentListIndex: "",
       //正在编辑的row
       editRow: [],
-      currentRow: null
+      currentRow: null,
+      // BG滚动高度
+      BGScrollTop: 0
     };
   },
   computed: {
@@ -449,6 +453,13 @@ export default {
     }
   },
   methods: {
+    TableScrollTop(val) {
+      let lineBG = this.$refs.lineBG;
+      lineBG.scrollTo(0, val);
+    },
+    handlerBGScroll(e) {
+      this.BGScrollTop = e.srcElement.scrollTop;
+    },
     //保存当前的所有数据
     handlerSaveData() {
       console.log(this.list);
