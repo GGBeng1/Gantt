@@ -38,6 +38,7 @@ export default {
       let disX = e.clientX;
       this.$emit("thunkMousedown");
       this.isMove = true;
+      console.log(this.isMove);
       document.onmousemove = e => {
         let newWidth = e.clientX - disX + width;
         let scale = newWidth / this.slider.offsetWidth;
@@ -132,11 +133,13 @@ export default {
 }
 .slider .tips {
   position: absolute;
-  left: -7px;
-  bottom: 30px;
+  left: -3px;
+  bottom: 0px;
+  font-size: 12px;
+  line-height: 24px;
   min-width: 15px;
   text-align: center;
-  padding: 4px 8px;
+  padding: 1px 5px;
   background: #000;
   border-radius: 5px;
   height: 24px;
