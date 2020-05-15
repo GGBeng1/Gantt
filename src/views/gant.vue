@@ -391,7 +391,94 @@ export default {
       //月数
       monthArr: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
       //项目数据
-      list: [],
+      list: [
+        {
+          name: "1",
+          ower: "",
+          per: 30,
+          type: "3",
+          planTime: [],
+          stoneTime: "",
+          startTime: "",
+          endTime: "",
+          id: 1589512272596,
+          expand: true,
+          top: 15,
+          isShow: true,
+          children: [
+            {
+              name: "1-1",
+              ower: "",
+              per: 50,
+              type: "1",
+              planTime: [1589472000000, 1589817600000],
+              stoneTime: "",
+              startTime: 1589472000000,
+              endTime: 1589817600000,
+              left: 20000,
+              widthChild: 200,
+              widthMe: 200,
+              top: 55,
+              id: 1589512287571,
+              isShow: true,
+              parentId: 1589512272596
+            },
+            {
+              name: "1-2",
+              ower: "",
+              per: 10,
+              type: "1",
+              planTime: [1589817600000, 1590076800000],
+              stoneTime: "",
+              startTime: 1589817600000,
+              endTime: 1590076800000,
+              left: 20160,
+              widthChild: 160,
+              widthMe: 160,
+              top: 95,
+              id: 1589512309848,
+              isShow: true,
+              parentId: 1589512272596
+            }
+          ],
+          widthChild: 320,
+          widthMe: 320,
+          left: 20000
+        },
+        {
+          name: "2",
+          ower: "",
+          per: 100,
+          type: "2",
+          planTime: [],
+          stoneTime: 1590249600000,
+          startTime: 1590249600000,
+          endTime: 1590249600000,
+          left: 20360,
+          widthChild: 40,
+          widthMe: 40,
+          top: 135,
+          id: 1589512324786,
+          isShow: true
+        },
+        {
+          name: "3",
+          ower: "",
+          per: 100,
+          type: "2",
+          planTime: [1589472000000, 1589817600000],
+          stoneTime: 1590422400000,
+          startTime: 1590422400000,
+          endTime: 1590422400000,
+          left: 20440,
+          widthChild: 40,
+          widthMe: 40,
+          top: 175,
+          id: 1589512356185,
+          isShow: true
+        }
+      ],
+      // list: [],
       //当前hover的项目起止时间
       currentLineDay: {
         start: 0,
@@ -485,96 +572,12 @@ export default {
     },
     //保存当前的所有数据
     handlerSaveData() {
-      console.log(this.list);
+      // console.log(this.list);
       // this.handlerCheckList();
     },
     //过滤导入的数据
     handlerCheckList() {
-      let l = [
-        {
-          name: "1",
-          ower: "",
-          per: 0,
-          type: "3",
-          planTime: [],
-          stoneTime: "",
-          startTime: "",
-          endTime: "",
-          id: 1589269666397,
-          // expand: true,
-          // top: 15,
-          isShow: true,
-          children: [
-            {
-              name: "1-1",
-              ower: "",
-              per: 0,
-              type: "1",
-              // planTime: [1589299200000, 1589558400000],
-              stoneTime: "",
-              startTime: 1589299200000,
-              endTime: 1589558400000,
-              // left: 19920,
-              // widthChild: 160,
-              // widthMe: 160,
-              // top: 15,
-              id: 1589354853863
-              // isShow: true
-            },
-            {
-              name: "1-2",
-              ower: "",
-              per: 78,
-              type: "1",
-              // planTime: [1589299200000, 1589731200000],
-              stoneTime: "",
-              startTime: 1589299200000,
-              endTime: 1589731200000,
-              // left: 19920,
-              // widthChild: 240,
-              // widthMe: 240,
-              // top: 55,
-              id: 1589355202051
-              // isShow: true
-            }
-          ]
-          // widthChild: 120,
-          // widthMe: 120,
-          // left: 19880
-        },
-        {
-          name: "3",
-          ower: "",
-          per: 100,
-          type: "2",
-          planTime: [],
-          stoneTime: 1589472000000,
-          startTime: 1589472000000,
-          endTime: 1589472000000,
-          // left: 20000,
-          // widthChild: 40,
-          // widthMe: 40,
-          // top: 50,
-          id: 1589269688345,
-          isShow: true
-        },
-        {
-          name: "4",
-          ower: "",
-          per: 100,
-          type: "2",
-          planTime: [],
-          stoneTime: 1589558400000,
-          startTime: 1589558400000,
-          endTime: 1589558400000,
-          // left: 20040,
-          // widthChild: 40,
-          // widthMe: 40,
-          // top: 85,
-          id: 1589269707819,
-          isShow: true
-        }
-      ];
+      let l = [];
       l.forEach((item, index) => {
         item.planTime = [];
         item.left =
