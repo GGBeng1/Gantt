@@ -41,6 +41,7 @@ yarn run serve
 - 关于时间跨度的问题[#5](https://github.com/GGBeng1/Gantt/issues/5)
 - 目前无法通过更改跨度配置来实现其他跨度，比如增加小时等。因为在初始化的时候一些配置直接固定，后续会更改作为 api 放出
 
+
 ### 查看示例
 
 See [demo](https://ggbeng1.github.io/Gantt/#/)
