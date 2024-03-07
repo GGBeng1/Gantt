@@ -1,3 +1,16 @@
-2021-10-31T15:32:00+08:00
-随机数:84170
-提交次数:148
+import Vue from 'vue'
+import Vuex from 'vuex'
+
+Vue.use(Vuex)
+
+export default new Vuex.Store({
+  state: {
+
+  },
+  mutations: {
+
+  },
+  actions: {
+
+  }
+})
