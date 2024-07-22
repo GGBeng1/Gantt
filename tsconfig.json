@@ -1,0 +1,42 @@
+{
+	"include": [
+		"package/**/*",
+		"env.d.ts"
+	],
+	"exclude": [],
+	"outDir": "dist_types",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"moduleResolution": "Bundler",
+		"jsxImportSource": "vue",
+		"noImplicitThis": true,
+		"verbatimModuleSyntax": true,
+		"composite": true,
+		"allowJs": true,
+		"target": "esnext",
+		"useDefineForClassFields": true,
+		"module": "esnext",
+		"strict": true,
+		"jsx": "preserve",
+		"sourceMap": true,
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"lib": [
+			"esnext",
+			"DOM",
+			"DOM.Iterable"
+		],
+		"forceConsistentCasingInFileNames": true,
+		"allowSyntheticDefaultImports": true,
+		"strictFunctionTypes": false,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"experimentalDecorators": true,
+		"noImplicitAny": false,
+		"skipLibCheck": true,
+		"types": [
+			"vite/client",
+			"node"
+		]
+	}
+}

@@ -2,15 +2,9 @@
   <div class="chart" ref="chart">
     <div class="header">
       <div class="header-left">
-        <el-button type="primary" size="mini" @click="handlerAddGantt"
-          >新建</el-button
-        >
-        <el-button type="primary" size="mini" @click="handlerSaveData"
-          >保存</el-button
-        >
-        <el-button type="primary" size="mini" @click="handlerCheckList"
-          >批量添加数据</el-button
-        >
+        <el-button type="primary" size="mini" @click="handlerAddGantt">新建</el-button>
+        <el-button type="primary" size="mini" @click="handlerSaveData">保存</el-button>
+        <el-button type="primary" size="mini" @click="handlerCheckList">批量添加数据</el-button>
       </div>
     </div>
     <div class="left" :style="{ width: rightLineX + 'px' }">
@@ -29,12 +23,7 @@
         @handlerDel="handlerDel"
       ></leftMenu>
       <div class="rightLine" :style="{ left: rightLineX + 'px' }"></div>
-      <div
-        class="rightLine"
-        :style="{ left: rightLineX + 'px' }"
-        ref="rightLine"
-        @mousedown="rightLineMousedown"
-      ></div>
+      <div class="rightLine" :style="{ left: rightLineX + 'px' }" ref="rightLine" @mousedown="rightLineMousedown"></div>
     </div>
     <div class="date" :style="{ left: rightLineX + 2 + 'px' }">
       <div class="years" v-for="item in allDays" :key="item.year">
@@ -57,24 +46,16 @@
             :style="{ width: currentDaySize.value + 'px' }"
           >
             <template v-if="currentDaySize.value == 40">
-              <span
-                class="dateNum todayDateNum"
-                v-if="j.today"
-                style="border-left:1px solid #d7d7d7;"
-              >
-                今天
-              </span>
+              <span class="dateNum todayDateNum" v-if="j.today" style="border-left: 1px solid #d7d7d7"> 今天 </span>
               <span
                 v-else
                 class="dateNum"
                 :style="{
-                  borderLeft: index == 0 ? 'none' : '1px solid #d7d7d7'
+                  borderLeft: index == 0 ? 'none' : '1px solid #d7d7d7',
                 }"
                 :class="{
                   weekday: j.weekday == 0 || j.weekday == 6,
-                  isHover:
-                    j.width >= currentLineDay.start &&
-                    j.width <= currentLineDay.end
+                  isHover: j.width >= currentLineDay.start && j.width <= currentLineDay.end,
                 }"
                 >{{ j.date }}</span
               >
@@ -83,12 +64,11 @@
                 :class="{
                   weekday2: j.weekday == 0,
                   weekday1: j.weekday == 6,
-                  today: j.today
+                  today: j.today,
                 }"
                 :style="{
                   width: currentDaySize.value + 'px',
-                  height:
-                    j.weekday == 0 || j.weekday == 6 ? lineBGHeight : '0px'
+                  height: j.weekday == 0 || j.weekday == 6 ? lineBGHeight : '0px',
                 }"
               ></span>
             </template>
@@ -100,27 +80,19 @@
                 class="dateNum"
                 :class="{
                   weekday: j.weekday == 0 || j.weekday == 6,
-                  isHover:
-                    j.width >= currentLineDay.start &&
-                    j.width <= currentLineDay.end,
-                  nodBorder:
-                    j.width >= currentLineDay.start &&
-                    j.width <= currentLineDay.end
+                  isHover: j.width >= currentLineDay.start && j.width <= currentLineDay.end,
+                  nodBorder: j.width >= currentLineDay.start && j.width <= currentLineDay.end,
                 }"
               >
                 <div
-                  style="width:100%21px;height:100%;"
+                  style="width: 100%21px; height: 100%"
                   :style="{
-                    borderLeft: index == 0 ? 'none' : '1px solid #d7d7d7'
+                    borderLeft: index == 0 ? 'none' : '1px solid #d7d7d7',
                   }"
                   v-show="
-                    (j.width == currentLineDay.end &&
-                      isHover &&
-                      j.weekday != 1) ||
-                      (j.width == currentLineDay.start &&
-                        isHover &&
-                        j.weekday != 1) ||
-                      j.weekday == 1
+                    (j.width == currentLineDay.end && isHover && j.weekday != 1) ||
+                    (j.width == currentLineDay.start && isHover && j.weekday != 1) ||
+                    j.weekday == 1
                   "
                 >
                   {{ j.date }}
@@ -131,12 +103,11 @@
                 :class="{
                   weekday2: j.weekday == 0,
                   weekday1: j.weekday == 6,
-                  today: j.today
+                  today: j.today,
                 }"
                 :style="{
                   width: currentDaySize.value + 'px',
-                  height:
-                    j.weekday == 0 || j.weekday == 6 ? lineBGHeight : '0px'
+                  height: j.weekday == 0 || j.weekday == 6 ? lineBGHeight : '0px',
                 }"
               ></span>
             </template>
@@ -147,25 +118,19 @@
               <span
                 class="dateNum"
                 :class="{
-                  isHover:
-                    j.width >= currentLineDay.start &&
-                    j.width <= currentLineDay.end,
-                  nodBorder:
-                    j.width >= currentLineDay.start &&
-                    j.width <= currentLineDay.end
+                  isHover: j.width >= currentLineDay.start && j.width <= currentLineDay.end,
+                  nodBorder: j.width >= currentLineDay.start && j.width <= currentLineDay.end,
                 }"
               >
                 <div
-                  style="width:100%;height:100%;font-size:10px!important;"
+                  style="width: 100%; height: 100%; font-size: 10px !important"
                   :style="{
-                    borderLeft: index == 0 ? 'none' : '1px solid #d7d7d7'
+                    borderLeft: index == 0 ? 'none' : '1px solid #d7d7d7',
                   }"
                   v-show="
                     (j.width == currentLineDay.end && isHover && j.date != 1) ||
-                      (j.width == currentLineDay.start &&
-                        isHover &&
-                        j.date != 1) ||
-                      j.date == 1
+                    (j.width == currentLineDay.start && isHover && j.date != 1) ||
+                    j.date == 1
                   "
                 >
                   {{ j.date }}
@@ -174,58 +139,32 @@
               <span
                 class="dateBG weekday2"
                 :class="{
-                  today: j.today
+                  today: j.today,
                 }"
-                style="border-right:none;"
+                style="border-right: none"
                 :style="{
                   width: currentDaySize.value + 'px',
-                  height:
-                    j.weekday == 0 || j.weekday == 6 ? lineBGHeight : '0px'
+                  height: j.weekday == 0 || j.weekday == 6 ? lineBGHeight : '0px',
                 }"
               ></span>
             </template>
           </div>
         </div>
         <div class="lineBG" @scroll="handlerBGScroll" ref="lineBG">
-          <template v-for="(item, index) in computedList">
+          <template v-for="(item, index) in computedList" :key="item.id + index + 'ccc'">
             <div
               class="line"
               :style="{
                 left: item.left + 'px',
                 width: item.widthMe + 'px',
-                top: item.top + 'px'
+                top: item.top + 'px',
               }"
               v-show="(item.type == '1' || item.type == '2') && item.isShow"
               :ref="'line' + item.id"
-              :key="item.id + index + 'ccc'"
-              @mousedown="
-                lineMousedown(
-                  `line${item.id}`,
-                  $event,
-                  item.id,
-                  item.parentId,
-                  index
-                )
-              "
-              @mouseover="
-                lineMouseover(
-                  `line${item.id}`,
-                  $event,
-                  item.id,
-                  item.parentId,
-                  index
-                )
-              "
+              @mousedown="lineMousedown(`line${item.id}`, $event, item.id, item.parentId, index)"
+              @mouseover="lineMouseover(`line${item.id}`, $event, item.id, item.parentId, index)"
               @mouseleave="lineMouseleave"
-              @mouseenter="
-                lineMouseenter(
-                  `line${item.id}`,
-                  $event,
-                  item.id,
-                  item.parentId,
-                  index
-                )
-              "
+              @mouseenter="lineMouseenter(`line${item.id}`, $event, item.id, item.parentId, index)"
             >
               <slider
                 :min="0"
@@ -242,28 +181,12 @@
               <div
                 class="leftCurDrag"
                 v-show="item.type == '1'"
-                @mousedown.stop="
-                  leftCurDragMounsedown(
-                    `line${item.id}`,
-                    $event,
-                    item.id,
-                    item.parentId,
-                    index
-                  )
-                "
+                @mousedown.stop="leftCurDragMounsedown(`line${item.id}`, $event, item.id, item.parentId, index)"
               ></div>
               <div
                 class="rightCurDrag"
                 v-show="item.type == '1'"
-                @mousedown.stop="
-                  rightCurDragMounsedown(
-                    `line${item.id}`,
-                    $event,
-                    item.id,
-                    item.parentId,
-                    index
-                  )
-                "
+                @mousedown.stop="rightCurDragMounsedown(`line${item.id}`, $event, item.id, item.parentId, index)"
               ></div>
               <div
                 class="stoneLine"
@@ -280,7 +203,7 @@
               :style="{
                 top: item.top + 'px',
                 left: item.left + 'px',
-                width: item.widthMe + 'px'
+                width: item.widthMe + 'px',
               }"
               v-if="item.type == '3'"
               :key="item.id + 'zzzzz'"
@@ -293,14 +216,8 @@
       <div class="toolTip">
         <div class="today base" @click="handleGoToday">今天</div>
         <el-dropdown trigger="click">
-          <span class="base">
-            {{ this.currentDaySize.label
-            }}<i class="el-icon-arrow-down el-icon--right"></i>
-          </span>
-          <el-dropdown-menu
-            slot="dropdown"
-            :style="{ left: this.left + 'px !important' }"
-          >
+          <span class="base"> {{ this.currentDaySize.label }}<i class="el-icon-arrow-down el-icon--right"></i> </span>
+          <el-dropdown-menu slot="dropdown" :style="{ left: this.left + 'px !important' }">
             <el-dropdown-item
               v-for="item in currentDaySizeOptions"
               :key="item.value + 'ck'"
@@ -316,28 +233,24 @@
           v-if="isShowMsg"
           :style="{
             left: currentProjectMsg.left + 'px',
-            top: currentProjectMsg.top + 'px'
+            top: currentProjectMsg.top + 'px',
           }"
         >
           <div class="lineMsg">
             <span class="projectName">{{ currentProjectMsg.name }}</span>
           </div>
           <div class="lineMsg">
-            <span class="title">持续时间:</span
-            ><span>{{ currentProjectMsg.allTime }}天</span>
+            <span class="title">持续时间:</span><span>{{ currentProjectMsg.allTime }}天</span>
           </div>
           <div class="lineMsg">
-            <span class="title">当前进度:</span
-            ><span>{{ currentProjectMsg.per }}%</span>
+            <span class="title">当前进度:</span><span>{{ currentProjectMsg.per }}%</span>
           </div>
           <div class="lineMsg">
-            <span class="title">开始时间:</span
-            ><span>{{ currentProjectMsg.startTime }}</span>
+            <span class="title">开始时间:</span><span>{{ currentProjectMsg.startTime }}</span>
           </div>
 
           <div class="lineMsg">
-            <span class="title">结束时间:</span
-            ><span>{{ currentProjectMsg.endTime }}</span>
+            <span class="title">结束时间:</span><span>{{ currentProjectMsg.endTime }}</span>
           </div>
         </div>
       </transition>
@@ -370,7 +283,7 @@ export default {
   components: {
     slider,
     leftMenu,
-    dialogAdd
+    dialogAdd,
   },
   data() {
     return {
@@ -421,7 +334,7 @@ export default {
               top: 55,
               id: 1589512287571,
               isShow: true,
-              parentId: 1589512272596
+              parentId: 1589512272596,
             },
             {
               name: "1-2",
@@ -438,12 +351,12 @@ export default {
               top: 95,
               id: 1589512309848,
               isShow: true,
-              parentId: 1589512272596
-            }
+              parentId: 1589512272596,
+            },
           ],
           widthChild: 320,
           widthMe: 320,
-          left: 20000
+          left: 20000,
         },
         {
           name: "2",
@@ -459,7 +372,7 @@ export default {
           widthMe: 40,
           top: 135,
           id: 1589512324786,
-          isShow: true
+          isShow: true,
         },
         {
           name: "3",
@@ -475,33 +388,33 @@ export default {
           widthMe: 40,
           top: 175,
           id: 1589512356185,
-          isShow: true
-        }
+          isShow: true,
+        },
       ],
       // list: [],
       //当前hover的项目起止时间
       currentLineDay: {
         start: 0,
-        end: 0
+        end: 0,
       },
       //当前的时间大小
       currentDaySize: {
         label: "天",
-        value: 40
+        value: 40,
       },
       currentDaySizeOptions: [
         {
           label: "天",
-          value: 40
+          value: 40,
         },
         {
           label: "周",
-          value: 24
+          value: 24,
         },
         {
           label: "月",
-          value: 12
-        }
+          value: 12,
+        },
       ],
       //是否显示信息
       isShowMsg: false,
@@ -513,7 +426,7 @@ export default {
         startTime: 0,
         endTime: 0,
         left: 0,
-        top: 0
+        top: 0,
       },
       isHover: false,
       showFixdTopMonth: false,
@@ -525,13 +438,13 @@ export default {
       BGScrollTop: 0,
       // 背景高度
       lineBGHeight: 0,
-      expandArr: []
+      expandArr: [],
     };
   },
   computed: {
     computedList() {
       let arr = [];
-      this.list.forEach(item => {
+      this.list.forEach((item) => {
         if (!item.children || item.children.length < 1) {
           arr.push(item);
         } else if (item.children && item.children.length >= 1) {
@@ -555,7 +468,7 @@ export default {
     //当前日
     currentDay() {
       return new Date().getDate();
-    }
+    },
   },
   methods: {
     TableScrollTop(val) {
@@ -580,12 +493,8 @@ export default {
       let l = [];
       l.forEach((item, index) => {
         item.planTime = [];
-        item.left =
-          item.type == 3 ? "" : this.computedTimeWidth(item.startTime);
-        item.widthMe = item.widthChild =
-          item.type == 3
-            ? ""
-            : this.computedTimeWidth(item.startTime, item.endTime);
+        item.left = item.type == 3 ? "" : this.computedTimeWidth(item.startTime);
+        item.widthMe = item.widthChild = item.type == 3 ? "" : this.computedTimeWidth(item.startTime, item.endTime);
         item.isShow = true;
         if (index - 1 < 0) {
           item.top = 15;
@@ -597,17 +506,13 @@ export default {
                 k.top = item.top + i * 40 + 35;
                 k.isShow = true;
                 k.left = this.computedTimeWidth(k.startTime);
-                k.widthMe = k.widthChild = this.computedTimeWidth(
-                  k.startTime,
-                  k.endTime
-                );
+                k.widthMe = k.widthChild = this.computedTimeWidth(k.startTime, k.endTime);
               });
             }
           }
         } else {
           if (l[index - 1].type == 3) {
-            item.top =
-              l[index - 1].top + l[index - 1].children.length * 40 + 40;
+            item.top = l[index - 1].top + l[index - 1].children.length * 40 + 40;
             if (item.type == 3) {
               item.isexpand = true;
               if (item.children.length > 0) {
@@ -616,10 +521,7 @@ export default {
                   z.top = item.top + o * 40;
                   z.isShow = true;
                   z.left = this.computedTimeWidth(z.startTime);
-                  z.widthMe = z.widthChild = this.computedTimeWidth(
-                    z.startTime,
-                    z.endTime
-                  );
+                  z.widthMe = z.widthChild = this.computedTimeWidth(z.startTime, z.endTime);
                 });
               }
             }
@@ -628,7 +530,7 @@ export default {
           }
         }
       });
-      l.forEach(item => {
+      l.forEach((item) => {
         if (item.type == 3) {
           this.setGroupWidth(item.id, l);
           this.setGroupPer(item.id, l);
@@ -641,7 +543,7 @@ export default {
       window.scrollTo({
         top: 0,
         left: this.list[0].left - 100,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     },
     //设置左侧leftmenu高亮
@@ -650,15 +552,12 @@ export default {
     },
     //分组是否展开
     handlerExpand(row, expand) {
-      let rowIndex = this.list.findIndex(item => {
+      let rowIndex = this.list.findIndex((item) => {
         return item.id == row.id;
       });
       this.list[rowIndex].expand = expand;
-      if (
-        this.list[rowIndex].children &&
-        this.list[rowIndex].children.length > 0
-      ) {
-        this.list[rowIndex].children.forEach(k => {
+      if (this.list[rowIndex].children && this.list[rowIndex].children.length > 0) {
+        this.list[rowIndex].children.forEach((k) => {
           k.isShow = expand;
         });
       }
@@ -669,7 +568,7 @@ export default {
       this.$nextTick(() => {
         this.$refs.dialogAdd.resetFields();
       });
-      this.currentListIndex = this.list.findIndex(item => {
+      this.currentListIndex = this.list.findIndex((item) => {
         return item.id == row.id;
       });
       this.dialogVal = true;
@@ -683,10 +582,10 @@ export default {
       if (row.parentId) {
         this.editRow[0] = row.parentId;
         this.editRow[1] = row.id;
-        let parent = this.list.find(item => {
+        let parent = this.list.find((item) => {
           return item.id == row.parentId;
         });
-        let cur = parent.children.find(item => {
+        let cur = parent.children.find((item) => {
           return item.id == row.id;
         });
         let { name, ower, type, planTime, stoneTime, per } = cur;
@@ -695,17 +594,14 @@ export default {
           obj.stoneTime = this.computedWithTime(cur.left, true);
         }
         obj.planTime[0] = this.computedWithTime(cur.left, true);
-        obj.planTime[1] = this.computedWithTime(
-          cur.left + cur.widthMe - this.currentDaySize.value,
-          true
-        );
+        obj.planTime[1] = this.computedWithTime(cur.left + cur.widthMe - this.currentDaySize.value, true);
         // console.log(obj);
         this.$nextTick(() => {
           this.$refs.dialogAdd.form = obj;
         });
       } else {
         this.editRow[0] = row.id;
-        let cur = this.list.find(item => {
+        let cur = this.list.find((item) => {
           return item.id == row.id;
         });
         let { name, ower, type, planTime, stoneTime, per } = cur;
@@ -714,10 +610,7 @@ export default {
           obj.stoneTime = this.computedWithTime(cur.left, true);
         }
         obj.planTime[0] = this.computedWithTime(cur.left, true);
-        obj.planTime[1] = this.computedWithTime(
-          cur.left + cur.widthMe - this.currentDaySize.value,
-          true
-        );
+        obj.planTime[1] = this.computedWithTime(cur.left + cur.widthMe - this.currentDaySize.value, true);
         this.$nextTick(() => {
           this.$refs.dialogAdd.form = obj;
         });
@@ -726,7 +619,7 @@ export default {
     //删除
     handlerDel(row) {
       if (!row.parentId) {
-        let index = this.list.findIndex(item => {
+        let index = this.list.findIndex((item) => {
           return item.id == row.id;
         });
         this.list.splice(index, 1);
@@ -740,13 +633,13 @@ export default {
           this.retDelTop(index, 1);
         }
       } else {
-        let parent = this.list.find(item => {
+        let parent = this.list.find((item) => {
           return item.id == row.parentId;
         });
-        let parentIndex = this.list.findIndex(item => {
+        let parentIndex = this.list.findIndex((item) => {
           return item.id == row.parentId;
         });
-        let cindex = parent.children.findIndex(k => {
+        let cindex = parent.children.findIndex((k) => {
           return k.id == row.id;
         });
         parent.children.splice(cindex, 1);
@@ -783,7 +676,7 @@ export default {
     handleEditSave(row) {
       // console.log(row);
       if (this.editRow.length == 1) {
-        let cur = this.list.find(item => {
+        let cur = this.list.find((item) => {
           return item.id == this.editRow[0];
         });
         cur = Object.assign(cur, row);
@@ -792,17 +685,14 @@ export default {
           cur.startTime = row.stoneTime ? row.stoneTime : row.planTime[0];
           cur.endTime = row.stoneTime ? row.stoneTime : row.planTime[1];
           cur.left = this.computedTimeWidth(cur.startTime);
-          cur.widthChild = cur.widthMe = this.computedTimeWidth(
-            cur.startTime,
-            cur.endTime
-          );
+          cur.widthChild = cur.widthMe = this.computedTimeWidth(cur.startTime, cur.endTime);
           cur.per = row.per;
         }
       } else if (this.editRow.length == 2) {
-        let parent = this.list.find(item => {
+        let parent = this.list.find((item) => {
           return item.id == this.editRow[0];
         });
-        let cur = parent.children.find(item => {
+        let cur = parent.children.find((item) => {
           return item.id == this.editRow[1];
         });
         cur = Object.assign(cur, row);
@@ -810,10 +700,7 @@ export default {
         cur.startTime = row.stoneTime ? row.stoneTime : row.planTime[0];
         cur.endTime = row.stoneTime ? row.stoneTime : row.planTime[1];
         cur.left = this.computedTimeWidth(cur.startTime);
-        cur.widthChild = cur.widthMe = this.computedTimeWidth(
-          cur.startTime,
-          cur.endTime
-        );
+        cur.widthChild = cur.widthMe = this.computedTimeWidth(cur.startTime, cur.endTime);
         this.setGroupWidth(this.editRow[0]);
       }
       this.editRow = [];
@@ -822,14 +709,10 @@ export default {
     // 根据时间计算距离
     computedTimeWidth(startTime, endTime) {
       let left =
-        (Math.floor(
-          startTime - new Date(`${this.currentYear - 1}/01/01`).getTime()
-        ) /
-          (1000 * 60 * 60 * 24)) *
+        (Math.floor(startTime - new Date(`${this.currentYear - 1}/01/01`).getTime()) / (1000 * 60 * 60 * 24)) *
         this.currentDaySize.value;
       let width =
-        (Math.floor(endTime - startTime) / (1000 * 60 * 60 * 24)) *
-          this.currentDaySize.value +
+        (Math.floor(endTime - startTime) / (1000 * 60 * 60 * 24)) * this.currentDaySize.value +
         this.currentDaySize.value;
       if (!endTime) {
         return left;
@@ -848,22 +731,13 @@ export default {
 
       if (obj.type != 3) {
         obj.left = this.computedTimeWidth(obj.startTime);
-        obj.widthMe = obj.widthChild = this.computedTimeWidth(
-          obj.startTime,
-          obj.endTime
-        );
+        obj.widthMe = obj.widthChild = this.computedTimeWidth(obj.startTime, obj.endTime);
         // console.log(obj.type);
         if (index == 0) {
           obj.top = 15;
         } else {
-          if (
-            this.list[index - 1].children &&
-            this.list[index - 1].children.length > 0
-          ) {
-            obj.top =
-              this.list[index - 1].children[
-                this.list[index - 1].children.length - 1
-              ].top + 40;
+          if (this.list[index - 1].children && this.list[index - 1].children.length > 0) {
+            obj.top = this.list[index - 1].children[this.list[index - 1].children.length - 1].top + 40;
             // console.log("ggggggg");
             // obj.top =
             //   this.list[index - 1].children.length * 40 +
@@ -887,14 +761,8 @@ export default {
         if (index == 0) {
           obj.top = 15;
         } else {
-          if (
-            this.list[index - 1].children &&
-            this.list[index - 1].children.length > 0
-          ) {
-            obj.top =
-              this.list[index - 1].children[
-                this.list[index - 1].children.length - 1
-              ].top + 40;
+          if (this.list[index - 1].children && this.list[index - 1].children.length > 0) {
+            obj.top = this.list[index - 1].children[this.list[index - 1].children.length - 1].top + 40;
           } else {
             obj.top = this.list[index - 1].top + 40;
           }
@@ -910,7 +778,7 @@ export default {
         obj.top = 40 + cindex * 40 + s.top;
         obj.parentId = s.id;
         s.children.push(obj);
-        s.children.forEach(item => {
+        s.children.forEach((item) => {
           item.isShow = true;
         });
         // console.log(s);
@@ -931,17 +799,14 @@ export default {
     handlerCheckIsExpandRow() {
       this.$nextTick(() => {
         if (this.expandArr.length == 0) return;
-        this.expandArr.forEach(i => {
-          this.$refs.leftMenu.$refs.tableMenu.toggleRowExpansion(
-            this.list[i],
-            false
-          );
+        this.expandArr.forEach((i) => {
+          this.$refs.leftMenu.$refs.tableMenu.toggleRowExpansion(this.list[i], false);
         });
         this.list.forEach((i, index) => {
           if (index > this.expandArr[0]) {
             i.top = i.top + 40;
             if (i.children && i.children.length > 0 && i.expand) {
-              i.children.forEach(z => {
+              i.children.forEach((z) => {
                 z.top = z.top + 40;
               });
             }
@@ -995,22 +860,22 @@ export default {
     setGroupWidth(id, lists) {
       let parent;
       if (lists) {
-        parent = lists.find(item => {
+        parent = lists.find((item) => {
           return item.id == id;
         });
       } else {
-        parent = this.list.find(item => {
+        parent = this.list.find((item) => {
           return item.id == id;
         });
       }
       let left = Math.min.apply(
         Math,
-        parent.children.map(o => {
+        parent.children.map((o) => {
           return o.left;
         })
       );
       let arr = [];
-      parent.children.forEach(item => {
+      parent.children.forEach((item) => {
         arr.push(item.left + item.widthMe);
       });
       let width = Math.max.apply(Math, arr);
@@ -1039,7 +904,7 @@ export default {
     },
     // 转为分组
     handlerGroup(row) {
-      let index = this.list.findIndex(item => {
+      let index = this.list.findIndex((item) => {
         return item.id == row.id;
       });
       this.list[index].type = "3";
@@ -1054,27 +919,26 @@ export default {
       this.isShowMsg = false;
       this.currentLineDay = {
         start: 0,
-        end: 0
+        end: 0,
       };
     },
     //转为计划任务
     handlerPlanProject(row) {
       if (!row.parentId) {
-        let index = this.list.findIndex(item => {
+        let index = this.list.findIndex((item) => {
           return item.id == row.id;
         });
         this.list[index].type = "1";
         this.list[index].stoneTime = "";
         this.list[index].per = 0;
-        this.list[index].left =
-          row.left + row.widthMe - this.currentDaySize.value;
+        this.list[index].left = row.left + row.widthMe - this.currentDaySize.value;
         this.list[index].widthMe = this.currentDaySize.value;
         this.list[index].widthChild = this.currentDaySize.value;
       } else {
-        let cindex = this.list.findIndex(item => {
+        let cindex = this.list.findIndex((item) => {
           return item.id == row.parentId;
         });
-        this.list[cindex].children.forEach(cl => {
+        this.list[cindex].children.forEach((cl) => {
           if (cl.id == row.id) {
             cl.type = "1";
             cl.per = 0;
@@ -1090,25 +954,24 @@ export default {
     //转化为里程碑
     handlerMilestone(row) {
       if (!row.parentId) {
-        let index = this.list.findIndex(item => {
+        let index = this.list.findIndex((item) => {
           return item.id == row.id;
         });
         this.list[index].per = 100;
         this.list[index].type = "2";
         // let endTimeWidth = row.left + row.widthMe;
-        this.list[index].left =
-          row.left + row.widthMe - this.currentDaySize.value;
+        this.list[index].left = row.left + row.widthMe - this.currentDaySize.value;
         this.list[index].widthMe = this.currentDaySize.value;
         this.list[index].widthChild = this.currentDaySize.value;
         this.setStoneLine();
       } else {
-        let cindex = this.list.findIndex(item => {
+        let cindex = this.list.findIndex((item) => {
           return item.id == row.parentId;
         });
-        let cur = this.list.find(item => {
+        let cur = this.list.find((item) => {
           return item.id == row.parentId;
         });
-        let cl = cur.children.find(item => {
+        let cl = cur.children.find((item) => {
           return item.id == row.id;
         });
         cl.type = "2";
@@ -1126,7 +989,7 @@ export default {
     rightLineMousedown(e) {
       let cx = e.clientX;
       let result;
-      document.onmousemove = event => {
+      document.onmousemove = (event) => {
         result = event.clientX - cx;
         if (cx + result <= 441) return;
         this.$refs.rightLine.style.left = cx + result + "px";
@@ -1147,7 +1010,7 @@ export default {
       window.scrollTo({
         top: 0,
         left: row.left - 100,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     },
     //更改daySize
@@ -1159,7 +1022,7 @@ export default {
       });
       this.handleScroll();
       if (this.currentRow) {
-        let rs = this.computedList.find(o => {
+        let rs = this.computedList.find((o) => {
           return o.id == this.currentRow.id;
         });
         this.$nextTick(() => {
@@ -1178,18 +1041,18 @@ export default {
     //滑动进度条事件
     thunkMouseup(per, e, id, parentId) {
       // console.log(per, id, parentId);
-      let cindex = this.computedList.findIndex(z => {
+      let cindex = this.computedList.findIndex((z) => {
         return z.id == id;
       });
       if (parentId) {
-        let index = this.list.findIndex(k => {
+        let index = this.list.findIndex((k) => {
           return k.id == parentId;
         });
         // console.log(parentId);
-        this.list.forEach(item => {
+        this.list.forEach((item) => {
           if (item.id == parentId) {
             // console.log(item, this.list);
-            item.children.forEach(k => {
+            item.children.forEach((k) => {
               if (k.id == id) {
                 k.per = per;
               }
@@ -1199,7 +1062,7 @@ export default {
         this.setGroupPer(parentId);
         this.$set(this.list, index, this.list[index]);
       } else {
-        this.list.forEach(item => {
+        this.list.forEach((item) => {
           if (item.id == id) {
             item.per = per;
           }
@@ -1211,17 +1074,17 @@ export default {
     setGroupPer(id, lists) {
       let z;
       if (lists) {
-        z = lists.find(o => {
+        z = lists.find((o) => {
           return o.id == id;
         });
       } else {
-        z = this.list.find(o => {
+        z = this.list.find((o) => {
           return o.id == id;
         });
       }
       let count = 0;
       let length = z.children.length;
-      z.children.forEach(item => {
+      z.children.forEach((item) => {
         count = count + (item.per / 100) * (1 / length);
       });
       z.per = Math.round(count * 100);
@@ -1229,14 +1092,11 @@ export default {
     //回到今天
     handleGoToday() {
       let s =
-        Math.round(window.innerWidth / this.currentDaySize.value / 2) *
-          this.currentDaySize.value -
-        this.rightLineX;
+        Math.round(window.innerWidth / this.currentDaySize.value / 2) * this.currentDaySize.value - this.rightLineX;
       let width =
         (Math.floor(
-          new Date(
-            `${this.currentYear}/${this.currentMonth}/${this.currentDay}`
-          ).getTime() - new Date(`${this.currentYear - 1}/01/01`).getTime()
+          new Date(`${this.currentYear}/${this.currentMonth}/${this.currentDay}`).getTime() -
+            new Date(`${this.currentYear - 1}/01/01`).getTime()
         ) /
           (1000 * 60 * 60 * 24)) *
           this.currentDaySize.value -
@@ -1244,7 +1104,7 @@ export default {
       window.scrollTo({
         top: 0,
         left: width,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     },
     //左侧拖拽增加
@@ -1264,11 +1124,8 @@ export default {
       let x = 0;
       let addwidth;
       let timers;
-      document.onmousemove = event => {
-        if (
-          event.clientX <= this.rightLineX + 80 &&
-          event.pageX >= this.rightLineX + 80
-        ) {
+      document.onmousemove = (event) => {
+        if (event.clientX <= this.rightLineX + 80 && event.pageX >= this.rightLineX + 80) {
           if (!this.timer) {
             this.timer = window.setInterval(() => {
               z = window.scrollX - this.currentDaySize.value;
@@ -1276,7 +1133,7 @@ export default {
               window.scrollTo({
                 top: 0,
                 left: z,
-                behavior: "smooth"
+                behavior: "smooth",
               });
               addwidth = cx - event.pageX;
             }, 50);
@@ -1289,7 +1146,7 @@ export default {
               window.scrollTo({
                 top: 0,
                 left: x,
-                behavior: "smooth"
+                behavior: "smooth",
               });
               addwidth = -(event.pageX - cx);
             }, 50);
@@ -1309,10 +1166,7 @@ export default {
         result1 = this.computedList[index].left - addwidth;
         if (result <= this.currentDaySize.value) {
           result = this.currentDaySize.value;
-          result1 =
-            this.computedList[index].left +
-            this.computedList[index].widthMe -
-            this.currentDaySize.value;
+          result1 = this.computedList[index].left + this.computedList[index].widthMe - this.currentDaySize.value;
         } else if (result1 <= 0) {
           result1 = 0;
           // console.log(result1);
@@ -1323,7 +1177,7 @@ export default {
         this.lineMouseover(dom, e, id, parentId, index);
         this.lineMouseleave(e, true);
       };
-      document.onmouseup = events => {
+      document.onmouseup = (events) => {
         if (!result) {
           document.onmousemove = document.onmouseup = null;
           return;
@@ -1332,12 +1186,8 @@ export default {
         window.clearInterval(timers);
         this.timer = null;
         timers = null;
-        result =
-          Math.round(result / this.currentDaySize.value) *
-          this.currentDaySize.value;
-        result1 =
-          Math.round(parseInt(line.style.left) / this.currentDaySize.value) *
-          this.currentDaySize.value;
+        result = Math.round(result / this.currentDaySize.value) * this.currentDaySize.value;
+        result1 = Math.round(parseInt(line.style.left) / this.currentDaySize.value) * this.currentDaySize.value;
         this.computedList[index].widthMe = result;
         this.computedList[index].widthChild = result;
         line.style.width = result + "px";
@@ -1346,9 +1196,9 @@ export default {
         this.checkIsin(dom, events, id, parentId, index);
         // this.setComputedListGroupWidth(parentId);
         if (parentId) {
-          this.list.forEach(item => {
+          this.list.forEach((item) => {
             if (item.id == parentId) {
-              item.children.forEach(k => {
+              item.children.forEach((k) => {
                 if (k.id == id) {
                   k.widthMe = k.widthChild = result;
                   k.left = result1;
@@ -1358,7 +1208,7 @@ export default {
           });
           this.setGroupWidth(parentId);
         } else {
-          this.list.forEach(item => {
+          this.list.forEach((item) => {
             if (item.id == id) {
               item.widthMe = item.widthChild = result;
               item.left = result1;
@@ -1385,7 +1235,7 @@ export default {
       let wx = window.scrollX;
       let addwidth;
       let timers;
-      document.onmousemove = event => {
+      document.onmousemove = (event) => {
         if (event.clientX >= window.innerWidth - 80) {
           if (!this.timer) {
             z = 0;
@@ -1396,7 +1246,7 @@ export default {
               window.scrollTo({
                 top: 0,
                 left: z + wx,
-                behavior: "smooth"
+                behavior: "smooth",
               });
               addwidth = event.pageX - cx + z;
             }, 50);
@@ -1409,7 +1259,7 @@ export default {
               window.scrollTo({
                 top: 0,
                 left: x,
-                behavior: "smooth"
+                behavior: "smooth",
               });
               addwidth = event.pageX - cx;
             }, 50);
@@ -1422,13 +1272,8 @@ export default {
           addwidth = event.pageX - cx;
         }
         result = this.computedList[index].widthMe + addwidth;
-        if (
-          result + parseInt(line.style.left) >=
-          this.days.length * this.currentDaySize.value
-        ) {
-          result =
-            this.days.length * this.currentDaySize.value -
-            parseInt(line.style.left);
+        if (result + parseInt(line.style.left) >= this.days.length * this.currentDaySize.value) {
+          result = this.days.length * this.currentDaySize.value - parseInt(line.style.left);
         }
         line.style.width = result + "px";
         this.computedList[index].widthChild = result;
@@ -1442,7 +1287,7 @@ export default {
         this.lineMouseover(dom, e, id, parentId, index);
         this.lineMouseleave(e, true);
       };
-      document.onmouseup = events => {
+      document.onmouseup = (events) => {
         if (!result) {
           document.onmousemove = document.onmouseup = null;
           return;
@@ -1451,17 +1296,15 @@ export default {
         window.clearInterval(timers);
         this.timer = null;
         timers = null;
-        result =
-          Math.round(result / this.currentDaySize.value) *
-          this.currentDaySize.value;
+        result = Math.round(result / this.currentDaySize.value) * this.currentDaySize.value;
         this.computedList[index].widthMe = result;
         this.computedList[index].widthChild = result;
         line.style.width = result + "px";
         this.checkIsin(dom, events, id, parentId, index);
         if (parentId) {
-          this.list.forEach(item => {
+          this.list.forEach((item) => {
             if (item.id == parentId) {
-              item.children.forEach(k => {
+              item.children.forEach((k) => {
                 if (k.id == id) {
                   k.widthMe = k.widthChild = result;
                   // k.left = result1;
@@ -1471,7 +1314,7 @@ export default {
           });
           this.setGroupWidth(parentId);
         } else {
-          this.list.forEach(item => {
+          this.list.forEach((item) => {
             if (item.id == id) {
               item.widthMe = item.widthChild = result;
               // item.left = result1;
@@ -1525,7 +1368,7 @@ export default {
         this.isShowMsg = false;
         this.currentLineDay = {
           start: 0,
-          end: 0
+          end: 0,
         };
       }
     },
@@ -1539,19 +1382,13 @@ export default {
     //鼠标悬停展示上部日期
     lineMouseover(dom, e, id, parentId, index) {
       let start =
-        Math.round(
-          parseInt(this.$refs[dom][0].style.left) / this.currentDaySize.value
-        ) *
-          this.currentDaySize.value +
+        Math.round(parseInt(this.$refs[dom][0].style.left) / this.currentDaySize.value) * this.currentDaySize.value +
         this.currentDaySize.value;
-      let end =
-        parseInt(this.$refs[dom][0].style.left) +
-        parseInt(this.$refs[dom][0].style.width);
-      end =
-        Math.round(end / this.currentDaySize.value) * this.currentDaySize.value;
+      let end = parseInt(this.$refs[dom][0].style.left) + parseInt(this.$refs[dom][0].style.width);
+      end = Math.round(end / this.currentDaySize.value) * this.currentDaySize.value;
       this.currentLineDay = {
         start,
-        end
+        end,
       };
       this.isHover = true;
       this.handlerSelect(this.computedList[index]);
@@ -1567,27 +1404,17 @@ export default {
     //鼠标进入显示当前项目的基本信息框
     lineMouseenter(dom, e, id, parentId, index) {
       let start =
-        Math.round(
-          parseInt(this.$refs[dom][0].style.left) / this.currentDaySize.value
-        ) * this.currentDaySize.value;
-      let end =
-        parseInt(this.$refs[dom][0].style.left) +
-        parseInt(this.$refs[dom][0].style.width);
-      end =
-        Math.round(end / this.currentDaySize.value) *
-          this.currentDaySize.value -
-        this.currentDaySize.value;
+        Math.round(parseInt(this.$refs[dom][0].style.left) / this.currentDaySize.value) * this.currentDaySize.value;
+      let end = parseInt(this.$refs[dom][0].style.left) + parseInt(this.$refs[dom][0].style.width);
+      end = Math.round(end / this.currentDaySize.value) * this.currentDaySize.value - this.currentDaySize.value;
       this.currentProjectMsg = {
         name: this.computedList[index].name,
         allTime: (end - start) / this.currentDaySize.value + 1,
         per: this.computedList[index].per,
         startTime: this.computedWithTime(start),
         endTime: this.computedWithTime(end),
-        left:
-          e.pageX + 220 - window.scrollX >= window.innerWidth
-            ? e.pageX - 220 - 600
-            : e.pageX + 50 - 600,
-        top: e.y + 20
+        left: e.pageX + 220 - window.scrollX >= window.innerWidth ? e.pageX - 220 - 600 : e.pageX + 50 - 600,
+        top: e.y + 20,
       };
       this.isShowMsg = true;
     },
@@ -1606,14 +1433,14 @@ export default {
           startTime: 0,
           endTime: 0,
           left: 0,
-          top: 0
+          top: 0,
         };
         // this.handlerSelect();
         return;
       }
       this.currentLineDay = {
         start: 0,
-        end: 0
+        end: 0,
       };
       this.isHover = false;
       this.isShowMsg = false;
@@ -1624,7 +1451,7 @@ export default {
         startTime: 0,
         endTime: 0,
         left: 0,
-        top: 0
+        top: 0,
       };
       this.handlerSelect();
     },
@@ -1643,14 +1470,14 @@ export default {
       let z = 0;
       let left;
       // console.log(cp);
-      document.onmousemove = event => {
+      document.onmousemove = (event) => {
         if (event.clientX >= window.innerWidth - 40) {
           z = window.scrollX + this.currentDaySize.value;
           // window.scrollTo(z, 0);
           window.scrollTo({
             top: 0,
             left: z,
-            behavior: "smooth"
+            behavior: "smooth",
           });
           let newWith = event.pageX - cp;
           result = this.computedList[index].left + newWith;
@@ -1662,7 +1489,7 @@ export default {
           window.scrollTo({
             top: 0,
             left: z,
-            behavior: "smooth"
+            behavior: "smooth",
           });
           let newWith = event.pageX - cp;
           result = this.computedList[index].left + newWith;
@@ -1677,21 +1504,19 @@ export default {
         this.lineMouseover(dom, e, id, parentId, index);
         this.lineMouseleave(e, true);
       };
-      document.onmouseup = events => {
+      document.onmouseup = (events) => {
         if (!result) {
           document.onmousemove = document.onmouseup = null;
           return;
         }
-        left =
-          Math.round(result / this.currentDaySize.value) *
-          this.currentDaySize.value;
+        left = Math.round(result / this.currentDaySize.value) * this.currentDaySize.value;
         this.computedList[index].left = left;
         line.style.left = left + "px";
         this.checkIsin(dom, events, id, parentId, index);
         if (parentId) {
-          this.list.forEach(item => {
+          this.list.forEach((item) => {
             if (item.id == parentId) {
-              item.children.forEach(k => {
+              item.children.forEach((k) => {
                 if (k.id == id) {
                   k.left = left;
                 }
@@ -1700,7 +1525,7 @@ export default {
           });
           this.setGroupWidth(parentId);
         } else {
-          this.list.forEach(item => {
+          this.list.forEach((item) => {
             if (item.id == id) {
               item.left = left;
             }
@@ -1726,7 +1551,7 @@ export default {
     getAllDate() {
       let obj = {};
       let arr = [this.currentYear - 1, this.currentYear, this.currentYear + 1];
-      arr.forEach(item => {
+      arr.forEach((item) => {
         obj.year = item;
         obj.days = this.isLeapYear(item) ? 365 : 366;
         this.allDays.push(obj);
@@ -1736,13 +1561,13 @@ export default {
     },
     //根据年份天数创建月份及月份天数数组
     checkDate() {
-      this.allDays.forEach(item => {
+      this.allDays.forEach((item) => {
         item.month = this.handleMonthDay(item.days, item.year);
       });
       // console.log(this.allDays);
-      this.allDays.forEach(element => {
+      this.allDays.forEach((element) => {
         if (element.year == this.currentYear) {
-          element.month[0][this.currentMonth].forEach(k => {
+          element.month[0][this.currentMonth].forEach((k) => {
             if (k.date == this.currentDay) {
               k.today = true;
             }
@@ -1750,10 +1575,10 @@ export default {
         }
       });
       let arr = [];
-      this.allDays.forEach(item => {
+      this.allDays.forEach((item) => {
         arr = arr.concat(item.month);
       });
-      arr.forEach(item => {
+      arr.forEach((item) => {
         for (var j in item) {
           this.days = this.days.concat(item[j]);
         }
@@ -1769,7 +1594,7 @@ export default {
     handleMonthDay(days, year) {
       let arr = [];
       let obj = {};
-      this.monthArr.forEach(item => {
+      this.monthArr.forEach((item) => {
         obj[item] = this.checkMonthDays(item, days);
       });
       arr.push(obj);
@@ -1833,9 +1658,7 @@ export default {
     setStoneLine(isFirst) {
       this.$nextTick(() => {
         // let arr = Array.from(document.getElementsByClassName("stoneLine"));
-        let height = window.getComputedStyle(
-          document.getElementsByClassName("lineBG")[0]
-        ).height;
+        let height = window.getComputedStyle(document.getElementsByClassName("lineBG")[0]).height;
         // console.log(height);
         this.lineBGHeight = height;
         // height = isFirst ? parseFloat(height) : parseFloat(height) - 16.8;
@@ -1857,23 +1680,21 @@ export default {
       }
       let time = this.computedWithTime(w, "YD");
       this.fixdTopMonth = time;
-    }
+    },
   },
   watch: {
     currentDaySize(newValue, oldValue) {
-      this.list.forEach(item => {
+      this.list.forEach((item) => {
         item.left = (item.left / oldValue.value) * newValue.value;
-        item.widthMe = item.widthChild =
-          (item.widthMe / oldValue.value) * newValue.value;
+        item.widthMe = item.widthChild = (item.widthMe / oldValue.value) * newValue.value;
         if (item.children && item.children.length > 0) {
-          item.children.forEach(k => {
+          item.children.forEach((k) => {
             k.left = (k.left / oldValue.value) * newValue.value;
-            k.widthMe = k.widthChild =
-              (k.widthMe / oldValue.value) * newValue.value;
+            k.widthMe = k.widthChild = (k.widthMe / oldValue.value) * newValue.value;
           });
         }
       });
-    }
+    },
   },
   mounted() {
     document.addEventListener("scroll", this.handleScroll);
@@ -1884,7 +1705,7 @@ export default {
   beforeDestroy() {
     window.removeEventListener("scroll", this.handleScroll);
     document.onmousemove = document.onmouseup = null;
-  }
+  },
 };
 </script>
 
@@ -2002,7 +1823,8 @@ export default {
         font-weight: 400;
         color: #303030;
         border-radius: 3px;
-        box-shadow: 0 3px 12px 0 rgba(48, 48, 48, 0.05),
+        box-shadow:
+          0 3px 12px 0 rgba(48, 48, 48, 0.05),
           0 3px 6px 0 rgba(48, 48, 48, 0.1);
         margin-right: 20px;
         &:hover {
@@ -2019,14 +1841,7 @@ export default {
       height: 14px !important;
       line-height: 14px !important;
       // margin-top: 5px;
-      clip-path: polygon(
-        100% 0,
-        100% 100%,
-        calc(100% - 8px) 60%,
-        8px 60%,
-        0 100%,
-        0 0
-      );
+      clip-path: polygon(100% 0, 100% 100%, calc(100% - 8px) 60%, 8px 60%, 0 100%, 0 0);
       // > div {
       //   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
       // }
