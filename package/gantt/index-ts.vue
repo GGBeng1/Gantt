@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, computed, nextTick, onUnmounted, getCurrentInstance, onMounted } from "vue";
+import { ref, reactive, computed, nextTick, onUnmounted, getCurrentInstance, onMounted, watch } from "vue";
 const _this = getCurrentInstance();
 interface ListItem {
   name: string;
@@ -1357,5 +1357,17 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener("scroll", handleScroll);
   document.onmousemove = document.onmouseup = null;
+});
+watch(currentDaySize, (newValue, oldValue) => {
+  list.value.forEach((item) => {
+    item.left = (item.left || 0 / oldValue) * newValue;
+    item.widthMe = item.widthChild = (item.widthMe || 0 / oldValue) * newValue;
+    if (item.children && item.children.length > 0) {
+      item.children.forEach((k) => {
+        k.left = (k.left || 0 / oldValue) * newValue;
+        k.widthMe = k.widthChild = (k.widthMe || 0 / oldValue) * newValue;
+      });
+    }
+  });
 });
 </script>
