@@ -17,7 +17,7 @@ interface ListItem {
   children?: ListItem[];
   widthChild?: number;
   widthMe?: number;
-  left?: number;
+  left: number;
   parentId?: number;
 }
 
@@ -176,7 +176,7 @@ const lineBGHeight = ref("");
 const expandArr = ref<any[]>([]);
 const leftMenuCom = ref(null);
 const dialogAddCom = ref(null);
-const lineBG = ref(null);
+const lineBG = ref<HTMLDivElement | null>(null);
 const rightLineCom = ref(null);
 const computedList = computed(() => {
   let arr: ListItem[] = [];
@@ -220,7 +220,7 @@ const handlerCheckList = () => {
   // Implementation with type annotations
 };
 //设置左侧leftmenu高亮
-const handlerSelect = (row: ListItem) => {
+const handlerSelect = (row?: ListItem) => {
   leftMenuCom.value.handlerSelect(row);
 };
 //分组是否展开
@@ -259,12 +259,12 @@ const handlerEdit = (row: ListItem) => {
       const { name, ower, type, planTime, stoneTime, per } = cur;
       obj = { name, ower, type, planTime, stoneTime, per };
 
-      if (type === 2) {
-        obj.stoneTime = computedWithTime(cur.left, true);
+      if (type === "2") {
+        obj.stoneTime = computedWithTime(cur.left, true) as number;
       }
       obj.planTime = [
-        computedWithTime(cur.left, true),
-        computedWithTime(cur.left + parseInt(cur.widthMe) - currentDaySize.value, true),
+        computedWithTime(cur.left, true) as number,
+        computedWithTime(cur.left + parseInt(cur.widthMe + "") - currentDaySize.value, true) as number,
       ];
     }
   } else {
@@ -275,12 +275,12 @@ const handlerEdit = (row: ListItem) => {
       const { name, ower, type, planTime, stoneTime, per } = cur;
       obj = { name, ower, type, planTime, stoneTime, per };
 
-      if (type === 2) {
-        obj.stoneTime = computedWithTime(cur.left, true);
+      if (type === "2") {
+        obj.stoneTime = computedWithTime(cur.left, true) as number;
       }
       obj.planTime = [
-        computedWithTime(cur.left, true),
-        computedWithTime(cur.left + parseInt(cur.widthMe) - currentDaySize.value, true),
+        computedWithTime(cur.left, true) as number,
+        computedWithTime(cur.left + parseInt(cur.widthMe + "") - currentDaySize.value, true) as number,
       ];
     }
   }
@@ -348,7 +348,7 @@ const handleEditSave = (row: ListItem) => {
       const cur = list.value[curIndex];
       Object.assign(cur, row);
       cur.planTime = row.planTime;
-      if (cur.type !== 3) {
+      if (cur.type !== "3") {
         cur.startTime = row.stoneTime || row.planTime[0];
         cur.endTime = row.stoneTime || row.planTime[1];
         cur.left = computedTimeWidth(cur.startTime);
@@ -751,7 +751,7 @@ const handleGoToday = () => {
     behavior: "smooth",
   });
 };
-
+let timer: ReturnType<typeof setInterval> | null | number = null;
 //左侧拖拽增加
 /**
  * @param  {String} dom ref
@@ -773,7 +773,6 @@ const leftCurDragMounsedown = (dom: string, e: MouseEvent, id: number, parentId:
   let z = 0;
   let x = 0;
   let addwidth: number;
-  let timer: ReturnType<typeof setInterval> | null | number = null;
   let timers: ReturnType<typeof setInterval> | null | number = null;
   const moveHandler = (event: MouseEvent) => {
     if (event.clientX <= rightLineX.value + 80 && event.pageX >= rightLineX.value + 80) {
@@ -909,13 +908,12 @@ const rightCurDragMounsedown = (dom: string, e: MouseEvent, id: number, parentId
   let wx = window.scrollX;
   let addwidth;
   let timers;
-  let timer;
   const mousemoveHandler = (event: MouseEvent) => {
     if (event.clientX >= window.innerWidth - 80) {
-      if (!timer.value) {
+      if (!timer) {
         z = 0;
         wx = window.scrollX;
-        timer.value = window.setInterval(() => {
+        timer = window.setInterval(() => {
           z += currentDaySize.value;
           window.scrollTo({
             top: 0,
@@ -938,9 +936,9 @@ const rightCurDragMounsedown = (dom: string, e: MouseEvent, id: number, parentId
         }, 50);
       }
     } else {
-      if (timer.value !== null) {
-        window.clearInterval(timer.value);
-        timer.value = null;
+      if (timer !== null) {
+        window.clearInterval(timer);
+        timer = null;
       }
       if (timers !== null) {
         window.clearInterval(timers);
@@ -1318,20 +1316,14 @@ const checkMonthDays = (month: number, days: number) => {
     case 10:
     case 12:
       return 31;
-      // eslint-disable-next-line no-unreachable
-      break;
     case 4:
     case 6:
     case 9:
     case 11:
       return 30;
-      // eslint-disable-next-line no-unreachable
-      break;
     case 2:
       day = days == 365 ? 28 : 29;
       return day;
-      // eslint-disable-next-line no-unreachable
-      break;
   }
 };
 //设置里程碑线的高度
@@ -1360,12 +1352,12 @@ onUnmounted(() => {
 });
 watch(currentDaySize, (newValue, oldValue) => {
   list.value.forEach((item) => {
-    item.left = (item.left || 0 / oldValue) * newValue;
-    item.widthMe = item.widthChild = (item.widthMe || 0 / oldValue) * newValue;
+    item.left = (item.left || 0 / oldValue.value) * newValue.value;
+    item.widthMe = item.widthChild = (item.widthMe || 0 / oldValue.value) * newValue.value;
     if (item.children && item.children.length > 0) {
       item.children.forEach((k) => {
-        k.left = (k.left || 0 / oldValue) * newValue;
-        k.widthMe = k.widthChild = (k.widthMe || 0 / oldValue) * newValue;
+        k.left = (k.left || 0 / oldValue.value) * newValue.value;
+        k.widthMe = k.widthChild = (k.widthMe || 0 / oldValue.value) * newValue.value;
       });
     }
   });
