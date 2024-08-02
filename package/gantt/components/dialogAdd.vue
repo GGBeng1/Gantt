@@ -1,29 +1,16 @@
 <template>
   <div class="dialogAdd">
-    <el-form
-      :model="form"
-      ref="form"
-      label-width="80px"
-      label-position="top"
-      :rules="rules"
-      size="mini"
-    >
+    <el-form :model="form" ref="form" label-width="80px" label-position="top" :rules="rules" size="mini">
       <el-form-item label="名称" prop="name">
         <el-input v-model="form.name"></el-input>
       </el-form-item>
       <el-form-item label="负责人" prop="ower">
-        <el-select v-model="form.ower" style="width:100%">
-          <el-option
-            v-for="item in owerOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          >
-          </el-option>
+        <el-select v-model="form.ower" style="width: 100%">
+          <el-option v-for="item in owerOptions" :key="item.value" :label="item.label" :value="item.value"> </el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="类型" prop="type" v-if="title == '新建'">
-        <el-select v-model="form.type" style="width:100%">
+        <el-select v-model="form.type" style="width: 100%">
           <el-option
             v-for="item in typeOptions"
             :key="item.value"
@@ -35,11 +22,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="进度" v-show="form.type == 1">
-        <el-input-number
-          v-model="form.per"
-          :min="0"
-          :max="100"
-        ></el-input-number>
+        <el-input-number v-model="form.per" :min="0" :max="100"></el-input-number>
       </el-form-item>
       <el-form-item label="计划周期" prop="planTime" v-show="form.type == 1">
         <el-date-picker
@@ -77,7 +60,7 @@ export default {
     dialogVal: Boolean,
     owerOptions: Array,
     isChildren: Boolean,
-    title: String
+    title: String,
   },
   data() {
     return {
@@ -87,22 +70,22 @@ export default {
         per: 0,
         type: "1",
         planTime: [],
-        stoneTime: ""
+        stoneTime: "",
       },
       typeOptions: [
         {
           label: "计划项目",
-          value: "1"
+          value: "1",
         },
         {
           label: "里程碑",
-          value: "2"
+          value: "2",
         },
         {
           label: "分组",
           value: "3",
-          disabled: false
-        }
+          disabled: false,
+        },
       ],
       rules: {
         name: [
@@ -111,12 +94,12 @@ export default {
             min: 1,
             max: 100,
             message: "长度在 1 到 100个字符",
-            trigger: "blur"
-          }
+            trigger: "blur",
+          },
         ],
         planTime: [{ required: true, message: "请输入时间", trigger: "blur" }],
-        ower: [{ message: "请选择负责人", trigger: "blur" }]
-      }
+        ower: [{ message: "请选择负责人", trigger: "blur" }],
+      },
     };
   },
   watch: {
@@ -129,13 +112,11 @@ export default {
               min: 1,
               max: 100,
               message: "长度在 1 到 100个字符",
-              trigger: "blur"
-            }
+              trigger: "blur",
+            },
           ],
-          planTime: [
-            { required: true, message: "请输入时间", trigger: "blur" }
-          ],
-          ower: [{ message: "请选择负责人", trigger: "blur" }]
+          planTime: [{ required: true, message: "请输入时间", trigger: "blur" }],
+          ower: [{ message: "请选择负责人", trigger: "blur" }],
         };
       } else if (val == 2) {
         this.rules = {
@@ -145,13 +126,11 @@ export default {
               min: 1,
               max: 100,
               message: "长度在 1 到 100个字符",
-              trigger: "blur"
-            }
+              trigger: "blur",
+            },
           ],
-          stoneTime: [
-            { required: true, message: "请输入时间", trigger: "blur" }
-          ],
-          ower: [{ message: "请选择负责人", trigger: "blur" }]
+          stoneTime: [{ required: true, message: "请输入时间", trigger: "blur" }],
+          ower: [{ message: "请选择负责人", trigger: "blur" }],
         };
       } else if (val == 3) {
         this.rules = {
@@ -161,27 +140,27 @@ export default {
               min: 1,
               max: 100,
               message: "长度在 1 到 100个字符",
-              trigger: "blur"
-            }
+              trigger: "blur",
+            },
           ],
-          ower: [{ message: "请选择负责人", trigger: "blur" }]
+          ower: [{ message: "请选择负责人", trigger: "blur" }],
         };
       }
     },
     isChildren: {
-      handler: function(val) {
-        this.$set(this.typeOptions, 2, {
+      handler: function (val) {
+        this.typeOptions[2] = {
           label: "分组",
           value: "3",
-          disabled: val
-        });
+          disabled: val,
+        };
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
   methods: {
     onSubmit() {
-      this.$refs.form.validate(valid => {
+      this.$refs.form.validate((valid) => {
         if (valid) {
           this.$emit("update:dialogVal", false);
           if (this.title == "新建") {
@@ -209,8 +188,8 @@ export default {
     resetFields() {
       this.$refs.form.resetFields();
       this.form.type = "1";
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -1,4 +1,4 @@
-import Gantt from './ymEditor/index.vue'
+import Gantt from './gantt/index-ts.vue'
 import type { App } from 'vue'
 
 // 定义 install 方法

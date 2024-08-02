@@ -9,12 +9,13 @@ pnpm install
 ### 运行
 
 ```
-pnpm dev
+pnpm dev:example
 ```
 
 ### 说明
 - main分支为正在开发的vue3版本
 - master分支为vue2版本
+
 ```
 基于vue开发的甘特图展现，可以用作团队协作，任务划分的等敏捷场景
 

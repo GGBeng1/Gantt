@@ -7,9 +7,7 @@ declare module '*.vue' {
 }
 interface Window {
 	Vue: any
-	RightMenu: any
-	YmEditor: any
-	DocsAPI: any
+	Gantt: any
 }
 // declare module 'shyt-table/customPlugin' {
 //   const customPlugin: any

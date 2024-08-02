@@ -1,4 +1,285 @@
+<template>
+  <div class="chart" ref="chart">
+    <div class="header">
+      <div class="header-left">
+        <el-button type="primary" size="mini" @click="handlerAddGantt">新建</el-button>
+        <el-button type="primary" size="mini">保存</el-button>
+        <el-button type="primary" size="mini" @click="handlerCheckList">批量添加数据</el-button>
+      </div>
+    </div>
+    <div class="left" :style="{ width: rightLineX + 'px' }">
+      <leftMenu
+        :list="list"
+        ref="leftMenuCom"
+        :BGScrollTop.sync="BGScrollTop"
+        @TableScrollTop="TableScrollTop"
+        @handlerRowClick="handlerRowClick"
+        @milestone="handlerMilestone"
+        @planProject="handlerPlanProject"
+        @handlerGroup="handlerGroup"
+        @handlerEdit="handlerEdit"
+        @handleGroupAdd="handleGroupAdd"
+        @handlerExpand="handlerExpand"
+        @handlerDel="handlerDel"
+      ></leftMenu>
+      <div class="rightLine" :style="{ left: rightLineX + 'px' }"></div>
+      <div
+        class="rightLine"
+        :style="{ left: rightLineX + 'px' }"
+        ref="rightLineCom"
+        @mousedown="rightLineMousedown"
+      ></div>
+    </div>
+    <div class="date" :style="{ left: rightLineX + 2 + 'px' }">
+      <div class="years" v-for="item in allDays" :key="item.year">
+        <div
+          class="month"
+          v-for="(value, key) in item.month[0]"
+          :key="value + 'zz' + key"
+          :style="{ width: value.length * currentDaySize.value + 'px' }"
+        >
+          <div class="month-top">{{ item.year }}年{{ key }}月</div>
+        </div>
+      </div>
+      <div class="topMonth" v-if="showFixdTopMonth">{{ fixdTopMonth }}</div>
+      <div class="allDaysArray">
+        <div class="alldays">
+          <div
+            v-for="(j, index) in days"
+            :key="index + 'cc'"
+            class="day"
+            :style="{ width: currentDaySize.value + 'px' }"
+          >
+            <template v-if="currentDaySize.value == 40">
+              <span class="dateNum todayDateNum" v-if="j.today" style="border-left: 1px solid #d7d7d7"> 今天 </span>
+              <span
+                v-else
+                class="dateNum"
+                :style="{
+                  borderLeft: index == 0 ? 'none' : '1px solid #d7d7d7',
+                }"
+                :class="{
+                  weekday: j.weekday == 0 || j.weekday == 6,
+                  isHover: j.width >= currentLineDay.start && j.width <= currentLineDay.end,
+                }"
+                >{{ j.date }}</span
+              >
+              <span
+                class="dateBG"
+                :class="{
+                  weekday2: j.weekday == 0,
+                  weekday1: j.weekday == 6,
+                  today: j.today,
+                }"
+                :style="{
+                  width: currentDaySize.value + 'px',
+                  height: j.weekday == 0 || j.weekday == 6 ? lineBGHeight : '0px',
+                }"
+              ></span>
+            </template>
+            <template v-if="currentDaySize.value == 24">
+              <!-- <span class="dateNum todayDateNum" v-if="j.today">
+              {{ j.date }}
+            </span> -->
+              <span
+                class="dateNum"
+                :class="{
+                  weekday: j.weekday == 0 || j.weekday == 6,
+                  isHover: j.width >= currentLineDay.start && j.width <= currentLineDay.end,
+                  nodBorder: j.width >= currentLineDay.start && j.width <= currentLineDay.end,
+                }"
+              >
+                <div
+                  style="width: 100%21px; height: 100%"
+                  :style="{
+                    borderLeft: index == 0 ? 'none' : '1px solid #d7d7d7',
+                  }"
+                  v-show="
+                    (j.width == currentLineDay.end && isHover && j.weekday != 1) ||
+                    (j.width == currentLineDay.start && isHover && j.weekday != 1) ||
+                    j.weekday == 1
+                  "
+                >
+                  {{ j.date }}
+                </div>
+              </span>
+              <span
+                class="dateBG"
+                :class="{
+                  weekday2: j.weekday == 0,
+                  weekday1: j.weekday == 6,
+                  today: j.today,
+                }"
+                :style="{
+                  width: currentDaySize.value + 'px',
+                  height: j.weekday == 0 || j.weekday == 6 ? lineBGHeight : '0px',
+                }"
+              ></span>
+            </template>
+            <template v-if="currentDaySize.value == 12">
+              <!-- <span class="dateNum todayDateNum" v-if="j.today">
+              {{ j.date }}
+            </span> -->
+              <span
+                class="dateNum"
+                :class="{
+                  isHover: j.width >= currentLineDay.start && j.width <= currentLineDay.end,
+                  nodBorder: j.width >= currentLineDay.start && j.width <= currentLineDay.end,
+                }"
+              >
+                <div
+                  style="width: 100%; height: 100%; font-size: 10px !important"
+                  :style="{
+                    borderLeft: index == 0 ? 'none' : '1px solid #d7d7d7',
+                  }"
+                  v-show="
+                    (j.width == currentLineDay.end && isHover && j.date != 1) ||
+                    (j.width == currentLineDay.start && isHover && j.date != 1) ||
+                    j.date == 1
+                  "
+                >
+                  {{ j.date }}
+                </div>
+              </span>
+              <span
+                class="dateBG weekday2"
+                :class="{
+                  today: j.today,
+                }"
+                style="border-right: none"
+                :style="{
+                  width: currentDaySize.value + 'px',
+                  height: j.weekday == 0 || j.weekday == 6 ? lineBGHeight : '0px',
+                }"
+              ></span>
+            </template>
+          </div>
+        </div>
+        <div class="lineBG" @scroll="handlerBGScroll" ref="lineBG">
+          <template v-for="(item, index) in computedList" :key="item.id + index + 'ccc'">
+            <div
+              class="line"
+              :style="{
+                left: item.left + 'px',
+                width: item.widthMe + 'px',
+                top: item.top + 'px',
+              }"
+              v-show="(item.type == '1' || item.type == '2') && item.isShow"
+              :ref="'line' + item.id"
+              @mousedown="lineMousedown(`line${item.id}`, $event, item.id, item.parentId, index)"
+              @mouseover="lineMouseover(`line${item.id}`, $event, item.id, item.parentId, index)"
+              @mouseleave="lineMouseleave($event, false)"
+              @mouseenter="lineMouseenter(`line${item.id}`, $event, item.id, item.parentId, index)"
+            >
+              <slider
+                :min="0"
+                :max="100"
+                v-model="item.per"
+                :id="item.id"
+                :parentId="item.parentId"
+                :widths="item.widthChild"
+                @thunkMousedown="thunkMousedown"
+                @thunkMouseup="thunkMouseup"
+                @thunkMousemove="thunkMousemove"
+                v-show="item.type == '1'"
+              ></slider>
+              <div
+                class="leftCurDrag"
+                v-show="item.type == '1'"
+                @mousedown.stop="leftCurDragMounsedown(`line${item.id}`, $event, item.id, item.parentId, index)"
+              ></div>
+              <div
+                class="rightCurDrag"
+                v-show="item.type == '1'"
+                @mousedown.stop="rightCurDragMounsedown(`line${item.id}`, $event, item.id, item.parentId, index)"
+              ></div>
+              <div
+                class="stoneLine"
+                :style="{ top: -item.top + 'px', height: item.top + 'px' }"
+                v-if="item.type == '2'"
+                @mouseenter="stoneLineMouseenter"
+              ></div>
+              <div class="milestone" v-if="item.type == '2'">
+                <i class="el-icon-check"></i>
+              </div>
+            </div>
+            <div
+              class="group"
+              :style="{
+                top: item.top + 'px',
+                left: item.left + 'px',
+                width: item.widthMe + 'px',
+              }"
+              v-if="item.type == '3'"
+              :key="item.id + 'zzzzz'"
+            >
+              <div class="progress" :style="{ width: item.per + '%' }"></div>
+            </div>
+          </template>
+        </div>
+      </div>
+      <div class="toolTip">
+        <div class="today base" @click="handleGoToday">今天</div>
+        <el-dropdown trigger="click">
+          <span class="base"> {{ currentDaySize.label }}<i class="el-icon-arrow-down el-icon--right"></i> </span>
+          <el-dropdown-menu slot="dropdown" :style="{ left: left + 'px !important' }">
+            <el-dropdown-item
+              v-for="item in currentDaySizeOptions"
+              :key="item.value + 'ck'"
+              @click.native="handleSetDaySize(item)"
+              >{{ item.label }}</el-dropdown-item
+            >
+          </el-dropdown-menu>
+        </el-dropdown>
+      </div>
+      <transition name="el-zoom-in-center">
+        <div
+          class="projectMsg"
+          v-if="isShowMsg"
+          :style="{
+            left: currentProjectMsg.left + 'px',
+            top: currentProjectMsg.top + 'px',
+          }"
+        >
+          <div class="lineMsg">
+            <span class="projectName">{{ currentProjectMsg.name }}</span>
+          </div>
+          <div class="lineMsg">
+            <span class="title">持续时间:</span><span>{{ currentProjectMsg.allTime }}天</span>
+          </div>
+          <div class="lineMsg">
+            <span class="title">当前进度:</span><span>{{ currentProjectMsg.per }}%</span>
+          </div>
+          <div class="lineMsg">
+            <span class="title">开始时间:</span><span>{{ currentProjectMsg.startTime }}</span>
+          </div>
+
+          <div class="lineMsg">
+            <span class="title">结束时间:</span><span>{{ currentProjectMsg.endTime }}</span>
+          </div>
+        </div>
+      </transition>
+    </div>
+    <el-dialog :title="title" v-model="dialogVal" width="500px" :before-close="handleClose" :append-to-body="true">
+      <dialogAdd
+        :title="title"
+        :dialogVal.sync="dialogVal"
+        :isChildren="isChildren"
+        @submit="handleSave"
+        @handleEditSave="handleEditSave"
+        @onCancle="onCancle"
+        ref="dialogAdd"
+      ></dialogAdd>
+    </el-dialog>
+  </div>
+</template>
 <script setup lang="ts">
+import dialogAdd from "./components/dialogAdd.vue";
+import slider from "./components/slider.vue";
+import leftMenu from "./components/leftMenu.vue";
+defineOptions({
+  name: "Gantt",
+})
 import { ref, reactive, computed, nextTick, onUnmounted, getCurrentInstance, onMounted, watch } from "vue";
 const _this = getCurrentInstance();
 interface ListItem {
@@ -57,9 +338,9 @@ const list = ref<ListItem[]>([
     per: 30,
     type: "3",
     planTime: [],
-    stoneTime: "",
-    startTime: "",
-    endTime: "",
+    stoneTime: 0,
+    startTime: 0,
+    endTime: 0,
     id: 1589512272596,
     expand: true,
     top: 15,
@@ -71,7 +352,7 @@ const list = ref<ListItem[]>([
         per: 50,
         type: "1",
         planTime: [1589472000000, 1589817600000],
-        stoneTime: "",
+        stoneTime: 0,
         startTime: 1589472000000,
         endTime: 1589817600000,
         left: 20000,
@@ -88,7 +369,7 @@ const list = ref<ListItem[]>([
         per: 10,
         type: "1",
         planTime: [1589817600000, 1590076800000],
-        stoneTime: "",
+        stoneTime: 0,
         startTime: 1589817600000,
         endTime: 1590076800000,
         left: 20160,
@@ -174,10 +455,10 @@ const currentRow = ref<any>(null);
 const BGScrollTop = ref(0);
 const lineBGHeight = ref("");
 const expandArr = ref<any[]>([]);
-const leftMenuCom = ref(null);
-const dialogAddCom = ref(null);
+const leftMenuCom = ref<InstanceType<typeof leftMenu>>();
+const dialogAddCom = ref<InstanceType<typeof dialogAdd>>();
 const lineBG = ref<HTMLDivElement | null>(null);
-const rightLineCom = ref(null);
+const rightLineCom = ref<HTMLDivElement | null>(null);
 const computedList = computed(() => {
   let arr: ListItem[] = [];
   list.value.forEach((item) => {
@@ -221,7 +502,7 @@ const handlerCheckList = () => {
 };
 //设置左侧leftmenu高亮
 const handlerSelect = (row?: ListItem) => {
-  leftMenuCom.value.handlerSelect(row);
+  leftMenuCom.value?.handlerSelect(row);
 };
 //分组是否展开
 const handlerExpand = (row: ListItem, expand: boolean) => {
@@ -239,9 +520,9 @@ const handlerExpand = (row: ListItem, expand: boolean) => {
 //分组添加子集
 const handleGroupAdd = (row: ListItem) => {
   nextTick(() => {
-    dialogAddCom.value.resetFields();
+    dialogAddCom.value?.resetFields();
   });
-  currentListIndex.value = list.value.findIndex((item) => item.id === row.id);
+  currentListIndex.value = list.value.findIndex((item) => item.id === row.id) + "";
   dialogVal.value = true;
   isChildren.value = true;
 };
@@ -284,8 +565,9 @@ const handlerEdit = (row: ListItem) => {
       ];
     }
   }
-
-  dialogAddCom.value.form = obj;
+  if (dialogAddCom.value) {
+    dialogAddCom.value.form = obj as any;
+  }
   title.value = "编辑";
   dialogVal.value = true;
 };
@@ -294,11 +576,11 @@ function handlerDel(row: ListItem) {
   if (!row.parentId) {
     const index = list.value.findIndex((item) => item.id === row.id);
     list.value.splice(index, 1);
-    if (row.type === 3) {
+    if (row.type === "3") {
       if (!row.expand) {
         retDelTop(index, 1);
       } else {
-        retDelTop(index, row.children.length + 1);
+        retDelTop(index, row?.children?.length || 0 + 1);
       }
     } else {
       retDelTop(index, 1);
@@ -306,15 +588,18 @@ function handlerDel(row: ListItem) {
   } else {
     const parentIndex = list.value.findIndex((item) => item.id === row.parentId);
     const parent = list.value[parentIndex];
-    const cindex = parent.children.findIndex((k) => k.id === row.id);
-    parent.children.splice(cindex, 1);
-    if (parent.children[cindex]) {
-      parent.children.forEach((o, i) => {
-        if (i >= cindex) {
-          o.top -= 40;
-        }
-      });
+    const cindex = parent?.children?.findIndex((k) => k.id === row.id) || -1;
+    if (cindex > -1) {
+      parent?.children?.splice(cindex, 1);
+      if (parent?.children?.[cindex]) {
+        parent?.children?.forEach((o, i) => {
+          if (i >= cindex) {
+            o.top -= 40;
+          }
+        });
+      }
     }
+
     setGroupWidth(row.parentId);
     setGroupPer(row.parentId);
     resetTop(parentIndex, true);
@@ -376,7 +661,9 @@ const handleEditSave = (row: ListItem) => {
     }
   }
   editRow.value = [];
-  dialogAddCom.value.form.per = 0;
+  if (dialogAddCom.value?.form) {
+    dialogAddCom.value.form.per = 0;
+  }
 };
 // 根据时间计算距离
 const computedTimeWidth = (startTime: number, endTime?: number): number => {
@@ -441,7 +728,7 @@ const handleSave = async (val: ListItem, isChildrenFlag: boolean) => {
     });
     setGroupWidth(s.id);
     setGroupPer(s.id);
-    resetTop(currentListIndex.value);
+    resetTop(Number(currentListIndex.value));
     list.value[parseInt(currentListIndex.value)] = s;
   } else {
     list.value.push(obj);
@@ -459,7 +746,7 @@ const handlerCheckIsExpandRow = () => {
   nextTick(() => {
     if (expandArr.value.length == 0) return;
     expandArr.value.forEach((i) => {
-      leftMenuCom.value.$refs.tableMenu.toggleRowExpansion(list.value[i], false);
+      leftMenuCom.value?.refs.tableMenu.toggleRowExpansion(list.value[i], false);
     });
     list.value.forEach((i, index) => {
       if (index > expandArr.value[0]) {
@@ -474,7 +761,7 @@ const handlerCheckIsExpandRow = () => {
   });
 };
 
-const resetTop = (zindex: number, reduce: boolean, isexpand: boolean) => {
+const resetTop = (zindex: number, reduce?: boolean, isexpand?: boolean) => {
   let num = reduce ? -40 : 40;
   if (!reduce && !isexpand) {
     list.value.forEach((item, index) => {
@@ -543,7 +830,7 @@ const handlerAddGantt = () => {
   });
   expandArr.value = arr;
   nextTick(() => {
-    dialogAddCom.value.resetFields();
+    dialogAddCom.value?.resetFields();
   });
 };
 // 转为分组
@@ -578,7 +865,7 @@ const handlerPlanProject = (row: any) => {
       list.value[index].type = "1";
       list.value[index].stoneTime = 0;
       list.value[index].per = 0;
-      list.value[index].left = row.left + row.widthMe - state.currentDaySize.value;
+      list.value[index].left = row.left + row.widthMe - currentDaySize.value;
       list.value[index].widthMe = currentDaySize.value;
       list.value[index].widthChild = currentDaySize.value;
     }
@@ -637,8 +924,7 @@ const rightLineMousedown = (e: MouseEvent) => {
   const mousemoveHandler = (event: MouseEvent) => {
     result = event.clientX - cx;
     if (cx + result <= 441) return;
-    // Assuming there's a ref named rightLine for a DOM element
-    rightLineCom.value.style.left = `${cx + result}px`;
+    if (rightLineCom.value) rightLineCom.value.style.left = `${cx + result}px`;
   };
 
   const mouseupHandler = () => {
@@ -760,7 +1046,7 @@ let timer: ReturnType<typeof setInterval> | null | number = null;
  * @param  {Number} parentId parentId
  * @param  {Number} index index
  */
-const leftCurDragMounsedown = (dom: string, e: MouseEvent, id: number, parentId: number, index: number) => {
+const leftCurDragMounsedown = (dom: string, e: MouseEvent, id: number, parentId: number | undefined, index: number) => {
   let line;
   if (Array.isArray(_this?.refs?.[dom])) {
     line = _this?.refs?.[dom][0] as HTMLElement;
@@ -894,7 +1180,13 @@ const leftCurDragMounsedown = (dom: string, e: MouseEvent, id: number, parentId:
  * @param  {Number} parentId parentId
  * @param  {Number} index index
  */
-const rightCurDragMounsedown = (dom: string, e: MouseEvent, id: number, parentId: number, index: number) => {
+const rightCurDragMounsedown = (
+  dom: string,
+  e: MouseEvent,
+  id: number,
+  parentId: number | undefined,
+  index: number
+) => {
   let line;
   if (Array.isArray(_this?.refs?.[dom])) {
     line = _this?.refs?.[dom][0] as HTMLElement;
@@ -1030,7 +1322,13 @@ const computedWithTime = (width: number, time?: boolean | string) => {
   }
 };
 //根据index值和e判断是否在当前line的范围里，是否展示时间和msg框
-const checkIsin = (dom: string, events: MouseEvent, id: string | number, parentId: string | number, index: number) => {
+const checkIsin = (
+  dom: string,
+  events: MouseEvent,
+  id: string | number,
+  parentId: string | number | undefined,
+  index: number
+) => {
   let line;
   if (Array.isArray(_this?.refs?.[dom])) {
     line = _this?.refs?.[dom][0] as HTMLElement;
@@ -1063,7 +1361,7 @@ const lineMouseover = (
   dom: string, // 使用 Ref 类型来处理 $refs
   e: MouseEvent,
   id: string | number,
-  parentId: string | number,
+  parentId: string | number | undefined,
   index: number
 ) => {
   let line;
@@ -1084,7 +1382,13 @@ const lineMouseover = (
   lineMouseenter(dom, e, id, parentId, index);
 };
 //鼠标进入显示当前项目的基本信息框
-const lineMouseenter = (dom: string, e: MouseEvent, id: string | number, parentId: string | number, index: number) => {
+const lineMouseenter = (
+  dom: string,
+  e: MouseEvent,
+  id: string | number,
+  parentId: string | number | undefined,
+  index: number
+) => {
   let line;
   if (Array.isArray(_this?.refs?.[dom])) {
     line = _this?.refs?.[dom][0] as HTMLElement;
@@ -1142,7 +1446,13 @@ const lineMouseleave = (e: MouseEvent, move: boolean) => {
   handlerSelect();
 };
 //每一行拖拽
-const lineMousedown = (dom: string, e: MouseEvent, id: string | number, parentId: string | number, index: number) => {
+const lineMousedown = (
+  dom: string,
+  e: MouseEvent,
+  id: string | number,
+  parentId: string | number | undefined,
+  index: number
+) => {
   // const line = ref<HTMLElement | null>(null); // 假设 dom 是 ref 名称
   // line.value = document.querySelector(`#${dom}`); // 假设 dom 是元素的 ID
   let line;
@@ -1363,3 +1673,292 @@ watch(currentDaySize, (newValue, oldValue) => {
   });
 });
 </script>
+<style lang="scss" scoped>
+.chart {
+  height: 100%;
+  user-select: none;
+  position: relative;
+  // overflow: hidden;
+  .header {
+    height: 40px;
+    position: relative;
+    .header-left {
+      margin-left: 10px;
+      box-sizing: border-box;
+      padding-top: 5px;
+      height: 40px;
+      position: fixed;
+      top: 0px;
+      left: 0px;
+      background-color: #fff;
+    }
+  }
+  .left {
+    position: fixed;
+    top: 40px;
+    left: 0px;
+    height: calc(100% - 40px);
+    background-color: #fff;
+    z-index: 999;
+    // border-right: 1px solid #d7d7d7;
+    .rightLine {
+      z-index: 999;
+      position: absolute;
+      top: 0px;
+      height: 100%;
+      width: 2px;
+      background-color: #d7d7d7;
+      box-shadow: 4px 2px 12px 0px rgba(0, 0, 0, 0.2);
+      cursor: col-resize;
+      &:hover {
+        background-color: #409eff;
+      }
+    }
+  }
+  .showCurrentLineDate {
+    position: fixed;
+    top: 0px;
+    background-color: #409eff;
+    color: #fff;
+    height: 20px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .projectMsg {
+    box-sizing: border-box;
+    padding: 20px;
+    position: absolute;
+    width: 220px;
+    height: 200px;
+    background-color: #fff;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    border: 1px solid #ebeef5;
+
+    .lineMsg {
+      margin-bottom: 10px;
+      .projectName {
+        font-size: 22px;
+      }
+      span {
+        font-size: 14px;
+        color: #909090;
+      }
+      .title {
+        margin-right: 10px;
+      }
+    }
+  }
+  .date {
+    display: flex;
+    height: calc(100% - 60px);
+    position: relative;
+    .topMonth {
+      // width: 100px;
+      background-color: #fff;
+      position: fixed;
+      top: 40px;
+      height: 21px;
+      line-height: 21px;
+      font-size: 12px !important;
+      font-weight: 600 !important;
+      color: #909090 !important;
+    }
+    .toolTip {
+      position: fixed;
+      right: 0px;
+      top: 90px;
+      z-index: 999;
+
+      .base {
+        display: inline-block;
+        font-weight: 500;
+        text-align: center;
+        height: 30px;
+        line-height: 30px;
+        padding: 0 15px;
+        background-color: #fff;
+        font-size: 14px;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+        font-weight: 400;
+        color: #303030;
+        border-radius: 3px;
+        box-shadow:
+          0 3px 12px 0 rgba(48, 48, 48, 0.05),
+          0 3px 6px 0 rgba(48, 48, 48, 0.1);
+        margin-right: 20px;
+        &:hover {
+          color: #409eff;
+        }
+      }
+    }
+
+    .group {
+      position: absolute;
+      background-color: #909090 !important;
+      border: none !important;
+      border-radius: 0 !important;
+      height: 14px !important;
+      line-height: 14px !important;
+      // margin-top: 5px;
+      clip-path: polygon(100% 0, 100% 100%, calc(100% - 8px) 60%, 8px 60%, 0 100%, 0 0);
+      // > div {
+      //   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      // }
+      .progress {
+        // width: 50px;
+        background-color: #606060 !important;
+        height: 100%;
+      }
+    }
+  }
+  .line {
+    position: absolute;
+    .rightCurDrag {
+      cursor: e-resize;
+      width: 10px;
+      background-color: #000;
+      height: 16px;
+      position: absolute;
+      right: -15px;
+      transform: translateY(-50%);
+      top: 50%;
+      border-radius: 3px;
+      user-select: none;
+    }
+    .leftCurDrag {
+      cursor: e-resize;
+      width: 10px;
+      background-color: #000;
+      height: 16px !important;
+      position: absolute;
+      left: -15px;
+      transform: translateY(-50%);
+      top: 50%;
+      border-radius: 3px;
+      user-select: none;
+    }
+    .stoneLine {
+      position: absolute;
+      top: 0px;
+      left: 50%;
+      margin-left: -1px;
+      width: 2px;
+      background-color: #24b47e;
+    }
+    .milestone {
+      position: absolute;
+      left: 50%;
+      // transform: translateX(-50%);
+      cursor: move;
+      margin-left: -10px;
+      width: 20px;
+      height: 20px;
+      background-color: #24b47e;
+      transform: rotate(-45deg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      i {
+        transform: rotate(45deg);
+        color: #fff;
+        z-index: 1;
+      }
+    }
+  }
+  .years {
+    display: flex;
+    height: 100%;
+    .month {
+      height: 100%;
+      .month-top {
+        height: 21px;
+        line-height: 21px;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        color: #909090 !important;
+      }
+    }
+  }
+  .allDaysArray {
+    position: absolute;
+    left: 0px;
+    top: 21px;
+    height: calc(100% - 21px);
+    .alldays {
+      display: flex;
+    }
+    .lineBG {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: scroll;
+    }
+    .weekday {
+      color: #c7c7c7;
+    }
+    .weekday1 {
+      border-left: 1px solid #d7d7d7;
+      background-image: linear-gradient(to bottom, #f8f8f8, #f8f8f8);
+    }
+    .weekday2 {
+      border-right: 1px solid #d7d7d7;
+      background-image: linear-gradient(to bottom, #f8f8f8, #f8f8f8);
+      width: 100%;
+    }
+    .day {
+      // width: 40px;
+      position: relative;
+      display: inline-block;
+      height: calc(100% - 21px);
+      box-sizing: border-box;
+      text-align: center;
+      .isHover {
+        background-color: #409eff;
+        color: #fff;
+      }
+      .nodBorder {
+        div {
+          border-left: none !important;
+        }
+      }
+      .dateNum {
+        font-size: 12px;
+        line-height: 20px;
+        display: block;
+        height: 20px;
+        // border-left: 1px solid #d7d7d7;
+        border-bottom: 1px solid #d7d7d7;
+        box-sizing: border-box;
+      }
+      .todayDateNum {
+        background-color: #f0a100;
+        color: #fff;
+      }
+      .dateBG {
+        position: absolute;
+        top: 20px;
+        left: 0px;
+        display: block;
+        // height: 100%;
+      }
+      .today {
+        position: relative;
+      }
+      .today::after {
+        content: "";
+        height: 100%;
+        width: 2px;
+        background-color: #f0a100;
+        position: absolute;
+        // left: 20px;
+        top: 0px;
+      }
+    }
+  }
+}
+</style>

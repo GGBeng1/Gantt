@@ -27,21 +27,21 @@
         :align="col.align"
         :resizable="col.resizable"
       >
-        <template slot-scope="scope">
-          <span v-if="col.prop == 'type'">{{
+        <template #default="scope">
+          <!-- <span v-if="col.prop == 'type'">{{
             projectType[scope.row.type]
           }}</span>
-          <span v-else>{{ scope.row[col.prop] }}</span>
+          <span v-else>{{ scope.row[col.prop] }}</span> -->
         </template>
       </el-table-column>
       <el-table-column align="center" :resizable="false" width="40">
-        <template slot="header">
+        <template #header>
           <i
             class="el-icon-setting icons"
             @click="handleShowHeaderCheckBox"
           ></i>
         </template>
-        <template slot-scope="scope">
+        <template #default="scope">
           <i
             class="el-icon-more icons"
             @click.stop="handleRowMore(scope.row, $event)"
@@ -189,11 +189,11 @@ export default {
   },
   methods: {
     handlerWatchScroll() {
-      let table = this.$refs.tableMenu.bodyWrapper;
-      table.addEventListener("scroll", e => {
-        // console.log(e.srcElement.scrollTop);
-        this.$emit("TableScrollTop", e.srcElement.scrollTop);
-      });
+      // let table = this.$refs.tableMenu.bodyWrapper;
+      // table.addEventListener("scroll", e => {
+      //   // console.log(e.srcElement.scrollTop);
+      //   this.$emit("TableScrollTop", e.srcElement.scrollTop);
+      // });
     },
     handlerSelect(row) {
       this.$refs.tableMenu.setCurrentRow(row);
