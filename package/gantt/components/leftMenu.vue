@@ -63,10 +63,10 @@
             ></el-checkbox>
           </div>
           <div class="line" style="justify-content: center;">
-            <el-button size="mini" @click="isShowHeaderBox = false"
+            <el-button size="small" @click="isShowHeaderBox = false"
               >取消</el-button
             >
-            <el-button type="primary" size="mini" @click="handlerSave"
+            <el-button type="primary" size="small" @click="handlerSave"
               >确定</el-button
             >
           </div>

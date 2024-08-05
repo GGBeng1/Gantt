@@ -2,9 +2,9 @@
   <div class="chart" ref="chart">
     <div class="header">
       <div class="header-left">
-        <el-button type="primary" size="mini" @click="handlerAddGantt">新建</el-button>
-        <el-button type="primary" size="mini">保存</el-button>
-        <el-button type="primary" size="mini" @click="handlerCheckList">批量添加数据</el-button>
+        <el-button type="primary" size="small" @click="handlerAddGantt">新建</el-button>
+        <el-button type="primary" size="small">保存</el-button>
+        <el-button type="primary" size="small" @click="handlerCheckList">批量添加数据</el-button>
       </div>
     </div>
     <div class="left" :style="{ width: rightLineX + 'px' }">
@@ -221,15 +221,19 @@
       <div class="toolTip">
         <div class="today base" @click="handleGoToday">今天</div>
         <el-dropdown trigger="click">
-          <span class="base"> {{ currentDaySize.label }}<i class="el-icon-arrow-down el-icon--right"></i> </span>
-          <el-dropdown-menu slot="dropdown" :style="{ left: left + 'px !important' }">
-            <el-dropdown-item
-              v-for="item in currentDaySizeOptions"
-              :key="item.value + 'ck'"
-              @click.native="handleSetDaySize(item)"
-              >{{ item.label }}</el-dropdown-item
-            >
-          </el-dropdown-menu>
+          <div class="base" style="display: flex; align-items: center">
+            <span>{{ currentDaySize.label }}</span> <el-icon style="margin-left: 5px"><ArrowDown /></el-icon>
+          </div>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item
+                v-for="item in currentDaySizeOptions"
+                :key="item.value + 'ck'"
+                @click="handleSetDaySize(item)"
+                >{{ item.label }}</el-dropdown-item
+              >
+            </el-dropdown-menu>
+          </template>
         </el-dropdown>
       </div>
       <transition name="el-zoom-in-center">
@@ -277,9 +281,10 @@
 import dialogAdd from "./components/dialogAdd.vue";
 import slider from "./components/slider.vue";
 import leftMenu from "./components/leftMenu.vue";
+import { ArrowDown } from "@element-plus/icons-vue";
 defineOptions({
   name: "Gantt",
-})
+});
 import { ref, reactive, computed, nextTick, onUnmounted, getCurrentInstance, onMounted, watch } from "vue";
 const _this = getCurrentInstance();
 interface ListItem {
@@ -1100,18 +1105,18 @@ const leftCurDragMounsedown = (dom: string, e: MouseEvent, id: number, parentId:
         addwidth = -(event.pageX - cx);
       }
     }
-    result = computedList[index].widthMe + addwidth;
-    result1 = computedList[index].left - addwidth;
+    result = computedList.value?.[index]?.widthMe || 0 + addwidth;
+    result1 = computedList.value[index].left - addwidth;
     if (result <= currentDaySize.value) {
       result = currentDaySize.value;
-      result1 = computedList[index].left + computedList[index].widthMe - currentDaySize.value;
+      result1 = computedList.value[index].left + (computedList.value?.[index]?.widthMe || 0) - currentDaySize.value;
     } else if (result1 <= 0) {
       result1 = 0;
     }
     line.style.width = result + "px";
     line.style.left = result1 + "px";
-    // computedList[index].widthChild = result;
-    let res = listFindIndex(computedList[index].id);
+    // computedList.value[index].widthChild = result;
+    let res = listFindIndex(computedList.value[index].id);
     res && (res.widthChild = result);
     lineMouseover(dom, e, id, parentId, index);
     lineMouseleave(e, true);
@@ -1132,12 +1137,12 @@ const leftCurDragMounsedown = (dom: string, e: MouseEvent, id: number, parentId:
     }
     result = Math.round(result / currentDaySize.value) * currentDaySize.value;
     result1 = Math.round(parseInt(line.style.left) / currentDaySize.value) * currentDaySize.value;
-    // computedList[index].widthMe = result;
-    // computedList[index].widthChild = result;
-    let res = listFindIndex(computedList[index].id);
+    // computedList.value[index].widthMe = result;
+    // computedList.value[index].widthChild = result;
+    let res = listFindIndex(computedList.value[index].id);
     res && (res.widthMe = res.widthChild = result);
     line.style.width = result + "px";
-    computedList[index].left = result1;
+    computedList.value[index].left = result1;
     line.style.left = result1 + "px";
     checkIsin(dom, events, id, parentId, index);
     if (parentId) {
@@ -1239,19 +1244,19 @@ const rightCurDragMounsedown = (
       addwidth = event.pageX - cx;
     }
 
-    result = computedList[index].widthMe + addwidth;
+    result = computedList.value[index].widthMe + addwidth;
     if (result + parseInt(line.style.left) >= days.value.length * currentDaySize.value) {
       result = days.value.length * currentDaySize.value - parseInt(line.style.left);
     }
     line.style.width = result + "px";
-    // computedList[index].widthChild = result;
-    let res = listFindIndex(computedList[index].id);
+    // computedList.value[index].widthChild = result;
+    let res = listFindIndex(computedList.value[index].id);
     res && (res.widthChild = result);
     if (result <= currentDaySize.value) {
       result = currentDaySize.value;
       line.style.width = result + "px";
-      // computedList[index].widthMe = result;
-      // computedList[index].widthChild = result;
+      // computedList.value[index].widthMe = result;
+      // computedList.value[index].widthChild = result;
       res && (res.widthMe = res.widthChild = result);
     }
     lineMouseover(dom, e, id, parentId, index);
@@ -1272,9 +1277,9 @@ const rightCurDragMounsedown = (
       timers = null;
     }
     result = Math.round(result / currentDaySize.value) * currentDaySize.value;
-    // computedList[index].widthMe = result;
-    // computedList[index].widthChild = result;
-    let res = listFindIndex(computedList[index].id);
+    // computedList.value[index].widthMe = result;
+    // computedList.value[index].widthChild = result;
+    let res = listFindIndex(computedList.value[index].id);
     res && (res.widthMe = res.widthChild = result);
     line.style.width = result + "px";
     checkIsin(dom, events, id, parentId, index);
@@ -1313,7 +1318,7 @@ const computedWithTime = (width: number, time?: boolean | string) => {
   let startTime =
     (width / currentDaySize.value) * (1000 * 60 * 60 * 24) + new Date(`${currentYear.value - 1}/01/01`).getTime();
   let s = new Date(startTime);
-  if (time) {
+  if (time && time == true) {
     return s.getTime();
   } else if (time === "YD") {
     return `${s.getFullYear()}年${s.getMonth() + 1}月`;

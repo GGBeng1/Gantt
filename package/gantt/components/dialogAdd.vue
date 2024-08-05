@@ -1,6 +1,6 @@
 <template>
   <div class="dialogAdd">
-    <el-form :model="form" ref="form" label-width="80px" label-position="top" :rules="rules" size="mini">
+    <el-form :model="form" ref="form" label-width="80px" label-position="top" :rules="rules" size="small">
       <el-form-item label="名称" prop="name">
         <el-input v-model="form.name"></el-input>
       </el-form-item>

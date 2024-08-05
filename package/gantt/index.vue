@@ -2,9 +2,9 @@
   <div class="chart" ref="chart">
     <div class="header">
       <div class="header-left">
-        <el-button type="primary" size="mini" @click="handlerAddGantt">新建</el-button>
-        <el-button type="primary" size="mini" @click="handlerSaveData">保存</el-button>
-        <el-button type="primary" size="mini" @click="handlerCheckList">批量添加数据</el-button>
+        <el-button type="primary" size="small" @click="handlerAddGantt">新建</el-button>
+        <el-button type="primary" size="small" @click="handlerSaveData">保存</el-button>
+        <el-button type="primary" size="small" @click="handlerCheckList">批量添加数据</el-button>
       </div>
     </div>
     <div class="left" :style="{ width: rightLineX + 'px' }">
