@@ -944,10 +944,10 @@ const rightLineMousedown = (e: MouseEvent) => {
 
   document.addEventListener("mousemove", mousemoveHandler);
   document.addEventListener("mouseup", mouseupHandler);
-  onUnmounted(() => {
-    document.removeEventListener("mousemove", mousemoveHandler);
-    document.removeEventListener("mouseup", mouseupHandler);
-  });
+  // onUnmounted(() => {
+  //   document.removeEventListener("mousemove", mousemoveHandler);
+  //   document.removeEventListener("mouseup", mouseupHandler);
+  // });
 };
 //rowClick事件
 const handlerRowClick = (row: ListItem) => {
@@ -1172,10 +1172,10 @@ const leftCurDragMounsedown = (dom: string, e: MouseEvent, id: number, parentId:
   document.addEventListener("mousemove", moveHandler);
   document.addEventListener("mouseup", upHandler);
 
-  onUnmounted(() => {
-    document.removeEventListener("mousemove", moveHandler);
-    document.removeEventListener("mouseup", upHandler);
-  });
+  // onUnmounted(() => {
+  //   document.removeEventListener("mousemove", moveHandler);
+  //   document.removeEventListener("mouseup", upHandler);
+  // });
 };
 //右侧边缘增加
 /**
@@ -1308,10 +1308,10 @@ const rightCurDragMounsedown = (
   document.addEventListener("mousemove", mousemoveHandler);
   document.addEventListener("mouseup", mouseupHandler);
 
-  onUnmounted(() => {
-    document.removeEventListener("mousemove", mousemoveHandler);
-    document.removeEventListener("mouseup", mouseupHandler);
-  });
+  // onUnmounted(() => {
+  //   document.removeEventListener("mousemove", mousemoveHandler);
+  //   document.removeEventListener("mouseup", mouseupHandler);
+  // });
 };
 //根据距离计算时间
 const computedWithTime = (width: number, time?: boolean | string) => {
