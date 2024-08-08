@@ -222,7 +222,8 @@
         <div class="today base" @click="handleGoToday">今天</div>
         <el-dropdown trigger="click">
           <div class="base" style="display: flex; align-items: center">
-            <span>{{ currentDaySize.label }}</span> <el-icon style="margin-left: 5px"><ArrowDown /></el-icon>
+            <span>{{ currentDaySize.label }}</span>
+            <el-icon style="margin-left: 5px"><ArrowDown /></el-icon>
           </div>
           <template #dropdown>
             <el-dropdown-menu>
@@ -1243,7 +1244,6 @@ const rightCurDragMounsedown = (
       }
       addwidth = event.pageX - cx;
     }
-
     result = computedList.value[index].widthMe + addwidth;
     if (result + parseInt(line.style.left) >= days.value.length * currentDaySize.value) {
       result = days.value.length * currentDaySize.value - parseInt(line.style.left);
